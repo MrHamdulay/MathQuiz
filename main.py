@@ -1,7 +1,14 @@
 #!/usr/bin/env python
 from flask import Flask, render_template
+import random
 
 app = Flask(__name__)
+
+def generate_question(level=0):
+    operations = '+-'
+    size = 2
+    question = (random.randint(1, 30) if i % 2 == 0 else random.choice(operations) for i in xrange(size*2-1))
+    return ' '.join(map(str, question))
 
 @app.route('/')
 def index():
@@ -9,7 +16,7 @@ def index():
 
 @app.route('/quiz/<level>', methods=('get', 'post'))
 def quiz(**kwargs):
-    return render_template('quiz.html', numberRemaining=5, question='4 + 3')
+    return render_template('quiz.html', numberRemaining=5, question=generate_question())
 
 @app.route('/leaderboard')
 def leaderboard():
