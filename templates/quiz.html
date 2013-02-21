@@ -3,6 +3,7 @@
     <body>
         <p>{{ numberRemaining }} questions remaining</p>
         <form action="" method="post">
+            <input type="hidden" value="{{ question }}" />
             <p>What is <b>{{ question }}</b>?</p>
             <input type="text" name="result" />
             <input type="submit" />
