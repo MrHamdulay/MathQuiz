@@ -4,7 +4,7 @@
         <p><b>Leaderboard</b></p>
         <p>
         {% for user in leaderboard %}
-        <b> {{ loop.index }} </b> {{ user[0] }} ({{ user[1]}}) <br />
+        <b> {{ loop.index }}) </b> {{ user[0] }} ({{ user[1]}}) <br />
         {% else %}
         Leaderboard is empty. Meh.
         {% endfor %}
