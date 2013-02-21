@@ -1,12 +1,14 @@
 #!/usr/bin/env python
-from flask import Flask, render_template
+from flask import Flask, render_template, request, make_response
 import random
 
 app = Flask(__name__)
 
+QUESTIONS_REMAINING_COOKIE = 'questionsRemaining'
+
 def generate_question(level=0):
     operations = '+-'
-    size = 2
+    size = 3
     question = (random.randint(1, 30) if i % 2 == 0 else random.choice(operations) for i in xrange(size*2-1))
     return ' '.join(map(str, question))
 
@@ -16,7 +18,18 @@ def index():
 
 @app.route('/quiz/<level>', methods=('get', 'post'))
 def quiz(**kwargs):
-    return render_template('quiz.html', numberRemaining=5, question=generate_question())
+    lastQuestion = request.args.get('question', None)
+
+    # number of questions remaining in quiz
+    questionsRemaining = int(request.cookies.get(QUESTIONS_REMAINING_COOKIE, 6))
+    # if we still have to ask questions of the user
+    if questionsRemaining != 0:
+        response = make_response(render_template('quiz.html', numberRemaining=questionsRemaining, question=generate_question()))
+        # decrease remaining questions counter
+        response.set_cookie(QUESTIONS_REMAINING_COOKIE, questionsRemaining-1)
+    else:
+        response = make_response(render_template('quizComplete.html'))
+    return response
 
 @app.route('/leaderboard')
 def leaderboard():
