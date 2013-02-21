@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 virtualenv venv
 . venv/bin/activate
 git pull origin master
