@@ -1,8 +1,13 @@
 <!doctype html>
 <html>
     <body>
-        <p>{{ numberRemaining}} questions remaining</p>
-        <p>What is <b>13 + 18</b>?</p>
+        <p>{{ numberRemaining }} questions remaining</p>
+        <form action="" method="post">
+            <p>What is <b>{{ question }}</b>?</p>
+            <input type="text" name="result" />
+            <input type="submit" />
+        </form>
+
         <br />
         <a href="/">Home</a>
         <a href="/leaderboard">Leaderboard</a>

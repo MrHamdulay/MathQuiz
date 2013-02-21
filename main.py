@@ -7,9 +7,9 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route('/quiz/<level>')
+@app.route('/quiz/<level>', methods=('get', 'post'))
 def quiz(**kwargs):
-    return render_template('quiz.html', numberRemaining=5)
+    return render_template('quiz.html', numberRemaining=5, question='4 + 3')
 
 @app.route('/leaderboard')
 def leaderboard():
