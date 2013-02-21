@@ -13,7 +13,7 @@ def quiz(**kwargs):
 
 @app.route('/leaderboard')
 def leaderboard():
-    return render_template('leaderboard.html')
+    return render_template('leaderboard.html', leaderboard=(('yaseen', '0:05'), ))
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

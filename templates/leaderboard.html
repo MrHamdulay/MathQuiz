@@ -3,10 +3,11 @@
     <body>
         <p><b>Leaderboard</b></p>
         <p>
-        <b>1)</b> Salaama Maniveld <br />
-        <b>2)</b> Yaseen Hamdulay <br />
-        <b>3)</b> Shuaib Parker <br />
-        <b>4)</b> Nurunisa Peck <br />
+        {% for user in leaderboard %}
+        <b> {{ loop.index }} </b> {{ user[0] }} ({{ user[1]}}) <br />
+        {% else %}
+        Leaderboard is empty. Meh.
+        {% endfor %}
         </p>
         <p>
             <a href="/">Home</a>
