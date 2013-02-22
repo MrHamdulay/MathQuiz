@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from flask import Flask, render_template, request, make_response
 import random
-from time import localtime
+from time import time
 
 app = Flask(__name__)
 
@@ -20,29 +20,34 @@ class State:
     QUESTIONS_REMAINING_COOKIE = 'questionsRemaining'
     CORRECTLY_ANSWERED_COOKIE = 'correctlyAnswered'
     INCORRECTLY_ANSWERED_COOKIE = 'incorrectlyAnswered'
+    START_TIME_COOKIE = 'time'
 
-    def __init__(self, questionsRemaining = 5, correctlyAnswered = 0, incorrectlyAnswered = 0):
+    def __init__(self, questionsRemaining = 5, correctlyAnswered = 0, incorrectlyAnswered = 0, startTime=time()):
         self.questionsRemaining = questionsRemaining
         self.correctlyAnswered = correctlyAnswered
         self.incorrectlyAnswered = incorrectlyAnswered
+        self.startTime = startTime
 
     def updateState(self, response):
         response.set_cookie(State.QUESTIONS_REMAINING_COOKIE, self.questionsRemaining)
         response.set_cookie(State.CORRECTLY_ANSWERED_COOKIE, self.correctlyAnswered)
         response.set_cookie(State.INCORRECTLY_ANSWERED_COOKIE, self.incorrectlyAnswered)
+        response.set_cookie(State.START_TIME_COOKIE, self.startTime)
 
     def reset(self):
         self.questionsRemaining = 5
         self.correctlyAnswered = 0
         self.incorrectlyAnswered = 0
+        self.starTime = time()
 
     @staticmethod
     def fromCookies(request):
         questionsRemaining = int(request.cookies.get(State.QUESTIONS_REMAINING_COOKIE, 5))
         correctlyAnswered = int(request.cookies.get(State.CORRECTLY_ANSWERED_COOKIE, 0))
         incorrectlyAnswered = int(request.cookies.get(State.INCORRECTLY_ANSWERED_COOKIE, 0))
+        startTime = float(request.cookies.get(State.START_TIME_COOKIE, time()))
 
-        return State(questionsRemaining, correctlyAnswered, incorrectlyAnswered)
+        return State(questionsRemaining, correctlyAnswered, incorrectlyAnswered, startTime)
 
 @app.route('/quiz/<level>', methods=('get', 'post'))
 def quiz(**kwargs):
@@ -90,7 +95,10 @@ def quiz(**kwargs):
         if result:
             state.questionsRemaining -= 1
     else:
-        response = make_response(render_template('quizComplete.html'))
+        response = make_response(render_template('quizComplete.html',
+            numberCorrect=state.correctlyAnswered,
+            total=state.correctlyAnswered+state.incorrectlyAnswered,
+            time=round(time()-state.startTime, 1)))
         state.reset()
 
     state.updateState(response)
