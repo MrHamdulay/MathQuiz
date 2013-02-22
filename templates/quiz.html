@@ -1,6 +1,11 @@
 <!doctype html>
 <html>
     <body>
+        {% if correct %}
+        <p style="color: rgb(0, 200, 0);">Correct!</p>
+        {% else %}
+        <p style="color: rgb(200, 0, 0);">Incorrect :(</p>
+        {% endif %}
         <p>{{ numberRemaining }} questions remaining</p>
         <form action="" method="post">
             <input type="hidden" value="{{ question }}" />
