@@ -1,9 +1,13 @@
 #!/usr/bin/env python
-from flask import Flask, render_template, request, make_response
+from flask import Flask, render_template, request, make_response, session
 import random
 from time import time
 
 app = Flask(__name__)
+# This isn't really my secret key
+app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+
+import config
 
 
 def generate_question(level=0):
@@ -29,10 +33,10 @@ class State:
         self.startTime = startTime
 
     def updateState(self, response):
-        response.set_cookie(State.QUESTIONS_REMAINING_COOKIE, self.questionsRemaining)
-        response.set_cookie(State.CORRECTLY_ANSWERED_COOKIE, self.correctlyAnswered)
-        response.set_cookie(State.INCORRECTLY_ANSWERED_COOKIE, self.incorrectlyAnswered)
-        response.set_cookie(State.START_TIME_COOKIE, self.startTime)
+        session[State.QUESTIONS_REMAINING_COOKIE] = self.questionsRemaining
+        session[State.CORRECTLY_ANSWERED_COOKIE] = self.correctlyAnswered
+        session[State.INCORRECTLY_ANSWERED_COOKIE] = self.incorrectlyAnswered
+        session[State.START_TIME_COOKIE] = self.startTime
 
     def reset(self):
         self.questionsRemaining = 5
@@ -42,16 +46,19 @@ class State:
 
     @staticmethod
     def fromCookies(request):
-        questionsRemaining = int(request.cookies.get(State.QUESTIONS_REMAINING_COOKIE, 5))
-        correctlyAnswered = int(request.cookies.get(State.CORRECTLY_ANSWERED_COOKIE, 0))
-        incorrectlyAnswered = int(request.cookies.get(State.INCORRECTLY_ANSWERED_COOKIE, 0))
-        startTime = float(request.cookies.get(State.START_TIME_COOKIE, time()))
+        questionsRemaining = int(session[State.QUESTIONS_REMAINING_COOKIE])
+        correctlyAnswered = int(session[State.CORRECTLY_ANSWERED_COOKIE])
+        incorrectlyAnswered = int(session[State.INCORRECTLY_ANSWERED_COOKIE])
+        startTime = float(session[State.START_TIME_COOKIE])
 
         return State(questionsRemaining, correctlyAnswered, incorrectlyAnswered, startTime)
 
 @app.route('/quiz/<level>', methods=('get', 'post'))
 def quiz(**kwargs):
-    state = State.fromCookies(request)
+    try:
+        state = State.fromCookies(request)
+    except KeyError:
+        state = State()
     error = ''
 
     lastQuestion = None
