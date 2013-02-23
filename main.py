@@ -2,10 +2,10 @@
 from flask import Flask, render_template, request, make_response, session
 import random
 from time import time
+import config
 
 app = Flask(__name__)
-# This isn't really my secret key
-app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+app.secret_key = config.secret_key
 
 import config
 
