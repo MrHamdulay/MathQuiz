@@ -5,7 +5,7 @@ from time import time
 import config
 
 app = Flask(__name__)
-app.secret_key = config.secret_key
+app.secret_key = 'testingthingy' #config.secret_key
 
 import config
 
