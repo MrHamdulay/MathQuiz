@@ -6,35 +6,38 @@ class Enum(set):
             return name
         raise AttributeError
 
+    def __getitem__(self, name):
+        return self.__getattr__(name)
+
 class Question:
     def __init__(self, first, operation, second):
         self.answer = eval(str(first)+str(operation)+str(second), {}, {})
         self.first = first
         self.second = second
+        self.operation = operation
 
     def __str__(self):
         return '%d %s %d' % (self.first, self.operation, self.second)
 
-difficulties = Enum('EASY', 'MEDIUM', 'HARD')
-types = Enum('ADDSUB', 'MULTDIV')
+Difficulties = Enum(('EASY', 'MEDIUM', 'HARD'))
+Types = Enum(('ADDSUB', 'MULTDIV'))
 
 def generateAddSub(difficulty):
     operations = '+-'
     operation = random.choice(operations)
 
-    if difficulty == difficulties.EASY:
+    if difficulty == Difficulties.EASY:
         first = random.randint(1, 15)
         second = random.randint(1, 15)
 
-        answer = eval(first+operation+second, {}, {})
         # negative numbers is hard, we can't deal
-        if answer < 0:
+        if Question(first, operation, second).answer < 0:
             second, first = first, second
 
-    elif difficulty == difficulties.MEDIUM:
+    elif difficulty == Difficulties.MEDIUM:
         first = random.randint(11, 50)
         second = random.randint(11, 60-first)
-    elif difficulty == difficulties.HARD:
+    elif difficulty == Difficulties.HARD:
         first = random.randint(11, 80)
         second = random.randint(11, 100-first)
 
@@ -47,25 +50,25 @@ def generateMultDiv(difficulty):
     first, second = None, None
 
     if operation == '/':
-        if difficulty == difficulties.EASY:
+        if difficulty == Difficulties.EASY:
             result = random.randint(0, 10)
             second = random.randint(0, 5)
-        elif difficulty == difficulties.MEDIUM:
+        elif difficulty == Difficulties.MEDIUM:
             result = random.randint(0, 12)
             second = random.randint(0, 20)
-        elif difficulty == difficulties.HARD:
+        elif difficulty == Difficulties.HARD:
             result = random.randint(-12, 12)
             second = random.randint(-20, 20)
 
         first = result*second
     elif operation == '*':
-        if difficulty = difficulties.EASY:
+        if difficulty == Difficulties.EASY:
             first = random.randint(0, 8)
             second = random.randint(0, 10/first)
-        elif difficulty = difficulties.MEDIUM:
+        elif difficulty == Difficulties.MEDIUM:
             first = random.randint(0, 12)
             second = random.randint(0, 80/first)
-        elif
+        elif difficulty == Difficulties.HARD:
             first = random.randint(-12, 12)
             second = random.randint(-80/first, 80/first)
 
@@ -73,11 +76,11 @@ def generateMultDiv(difficulty):
 
 
 def generateQuestion(type, difficulty):
-    assert difficulty in difficulties
-    assert type in types
+    assert difficulty in Difficulties
+    assert type in Types
 
-    if type == types.ADDSUB:
-        generateAddSub(difficulty)
-    elif type == types.MULTDIV:
-        generateMultDiv(difficulty)
+    if type == Types.ADDSUB:
+        return generateAddSub(difficulty)
+    elif type == Types.MULTDIV:
+        return generateMultDiv(difficulty)
 

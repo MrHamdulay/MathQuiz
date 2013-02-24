@@ -5,16 +5,11 @@ from time import time
 import config
 
 app = Flask(__name__)
-app.secret_key = 'testingthingy' #config.secret_key
+app.secret_key = config.secret_key
 
 import config
+import question
 
-
-def generate_question(level=0):
-    operations = '+-'
-    size = 2
-    question = (random.randint(1, 15) if i % 2 == 0 else random.choice(operations) for i in xrange(size*2-1))
-    return ' '.join(map(str, question))
 
 @app.route('/')
 def index():
@@ -53,7 +48,7 @@ class State:
 
         return State(questionsRemaining, correctlyAnswered, incorrectlyAnswered, startTime)
 
-@app.route('/quiz/<level>', methods=('get', 'post'))
+@app.route('/quiz/<type>/<difficulty>', methods=('get', 'post'))
 def quiz(**kwargs):
     try:
         state = State.fromCookies(request)
@@ -64,6 +59,7 @@ def quiz(**kwargs):
     lastQuestion = None
     result = ''
     correctlyAnswered = False
+
 
     try:
         lastQuestion = request.form['question']
@@ -87,13 +83,15 @@ def quiz(**kwargs):
     # number of questions remaining in quiz
     # if we still have to ask questions of the user
     if state.questionsRemaining - 1 != 0:
-        question = generate_question()
-        answer = eval(question, {}, {})
+        difficulty = question.Difficulties[kwargs['difficulty'].upper()]
+        type = question.Types[kwargs['type'].upper()]
+
+        q = question.generateQuestion(type, difficulty)
 
         response = make_response(render_template('quiz.html',
             numberRemaining=state.questionsRemaining,
-            question=question,
-            answer=answer,
+            question=str(q),
+            answer=q.answer,
             error=error,
             answered = result != '', #has the user answered this question
             correct=correctlyAnswered))
