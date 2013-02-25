@@ -35,7 +35,11 @@ def create_user():
         print request.remote_addr
         mxit_user_id = -1 # development id
     c = g.database.cursor()
-    c.execute('INSERT INTO users (mxit_userid, joined_date) VALUES (%s, NOW())', (mxit_user_id, ))
+    try:
+        c.execute('INSERT INTO users (mxit_userid, joined_date) VALUES (%s, NOW())', (mxit_user_id, ))
+    except psycopg2.IntegrityError:
+        # this isn't an error. We just don't check whether we've added this user before
+        pass
     c.close()
 
 def log_quiz_answer(quiz_id, question, answer):
