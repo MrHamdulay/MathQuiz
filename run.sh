@@ -1,3 +1,4 @@
 #!/bin/bash
 . venv/bin/activate
-python main.py
+python -c 'from mathquiz import app; app.run(debug=True)'
+
