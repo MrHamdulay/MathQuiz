@@ -1,11 +1,9 @@
 #!/usr/bin/env python
-from flask import Flask, render_template, request, make_response, session
+from flask import render_template, request, make_response, session
 import random
 from time import time
-import config
 
-app = Flask(__name__)
-app.secret_key = config.secret_key
+from . import app
 
 import config
 import question
@@ -113,5 +111,3 @@ def quiz(**kwargs):
 def leaderboard():
     return render_template('leaderboard.html', leaderboard=(('yaseen', '0:05'), ('shuaib parker', '0:05'), ('salaama maniveld', '0:06')))
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
