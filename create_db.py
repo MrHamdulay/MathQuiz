@@ -1,6 +1,6 @@
 import psycopg2
 
-import config
+from mathquiz import config, SCHEMA_VERSION
 
 db = psycopg2.connect('user=%s' % config.database_user)
 
@@ -11,10 +11,6 @@ try:
                 'id integer primary key,'
                 'mxit_userid varchar(100),'
                 'joined_date date)')
-
-    c.execute('create table question_log ('
-                'id integer primary key,'
-
 
     c.execute('create table quiz ('
                 'id integer primary key,'
@@ -29,8 +25,14 @@ try:
                 'question varchar(50),'
                 'answer integer)') #user given answer, not necessarily correct
 
-
-
-except psycopg2.ProgrammingError:
+    c.execute('create table app_settings ('
+                'key varchar, '
+                'value varchar)')
+    c.execute("insert into app_settings (key, value) values ('schema_version', '%s')", (SCHEMA_VERSION, ))
+    db.commit()
+except psycopg2.ProgrammingError, e:
     print 'You have already created databases. To update schema first clear databsae. We dont upgrade '
-db.commit()
+    print e
+finally:
+    c.close()
+    db.close()
