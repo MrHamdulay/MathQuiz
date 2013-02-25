@@ -24,7 +24,8 @@ try:
                 'id SERIAL,'
                 'quiz_id integer,'
                 'question varchar(50),'
-                'answer integer)') #user given answer, not necessarily correct
+                'answer integer,'
+                'correct boolean)') #user given answer, not necessarily correct
 
     c.execute('create table app_settings ('
                 'key varchar, '

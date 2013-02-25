@@ -66,7 +66,6 @@ def quiz(**kwargs):
         result = int(request.form['result'])
         correctlyAnswered = int(lastQuestion) == result
 
-        #database.log_quiz_answer(
     except KeyError:
         print 'keyerror'
     except ValueError:

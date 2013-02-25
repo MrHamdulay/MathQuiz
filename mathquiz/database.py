@@ -1,6 +1,6 @@
 import psycopg2
 
-from flask import g, request
+from flask import g, request, session
 
 
 from mathquiz import app, config, SCHEMA_VERSION
@@ -37,18 +37,33 @@ def create_user():
     c = g.database.cursor()
     try:
         c.execute('INSERT INTO users (mxit_userid, joined_date) VALUES (%s, NOW())', (mxit_user_id, ))
+        c.execute('SELECT lastval()')
+        session['user_id'] = c.fetchone()[0]
     except psycopg2.IntegrityError:
         # this isn't an error. We just don't check whether we've added this user before
-        pass
+        if 'user_id' not in session:
+            raise Exception('We dont have an internal user id for the current session somehow or other')
     c.close()
 
-def log_quiz_answer(quiz_id, question, answer):
+def log_quiz_answer(quiz_id, question, answer, correct):
     c = g.database.cursor()
-    c.execute('INSERT INTO quiz_submissions (quiz_id, question, answer) VALUES (%s, %s, %s)', (quiz_id, str(question), answer))
+    c.execute('INSERT INTO quiz_submissions (quiz_id, question, answer, correct) VALUES (%s, %s, %s)', (quiz_id, str(question), answer, correct))
     c.commit()
     c.close()
 
-def create_quiz(user):
+def create_quiz(type):
     c = g.database.cursor()
-    c.execute('INSERT INTO quiz (')
+    c.execute('INSERT INTO quiz (type, start_time, end_time, answered_by_userid) VALUES (%s, NOW(), -1, %s', (type, session['user_id']))
+    c.execute('SELECT lastval()')
+    quiz_id = c.fetchone()[0]
 
+    c.commit()
+    c.close()
+
+    return quiz_id
+
+def quiz_complete(quiz_id):
+    c = g.database.cursor()
+    c.execute('UPDATE quiz SET end_time = NOW() WHERE id = %s', (quiz_id, ))
+    c.commit()
+    c.close()
