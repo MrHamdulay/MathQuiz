@@ -8,19 +8,20 @@ c = db.cursor()
 
 try:
     c.execute('create table users ('
-                'id integer primary key,'
-                'mxit_userid varchar(100),'
+                'id SERIAL,'
+                'mxit_userid varchar(100) unique,'
                 'joined_date date)')
 
     c.execute('create table quiz ('
-                'id integer primary key,'
+                'id SERIAL,'
                 'type varchar(20),'
                 'start_time date,'
                 'answered_by_userid integer,' #user id from users
+                'num_correct integer,'
                 'end_time date)')
 
     c.execute('create table quiz_submissions ('
-                'id integer primary key,'
+                'id SERIAL,'
                 'quiz_id integer,'
                 'question varchar(50),'
                 'answer integer)') #user given answer, not necessarily correct
