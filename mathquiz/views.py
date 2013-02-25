@@ -35,10 +35,10 @@ class State:
         self.questionsRemaining = 5
         self.correctlyAnswered = 0
         self.incorrectlyAnswered = 0
-        self.starTime = time()
+        self.startTime = time()
 
     @staticmethod
-    def fromCookies(request):
+    def fromSession(request):
         questionsRemaining = int(session[State.QUESTIONS_REMAINING_COOKIE])
         correctlyAnswered = int(session[State.CORRECTLY_ANSWERED_COOKIE])
         incorrectlyAnswered = int(session[State.INCORRECTLY_ANSWERED_COOKIE])
@@ -46,10 +46,12 @@ class State:
 
         return State(questionsRemaining, correctlyAnswered, incorrectlyAnswered, startTime)
 
+
+
 @app.route('/quiz/<type>/<difficulty>', methods=('get', 'post'))
 def quiz(**kwargs):
     try:
-        state = State.fromCookies(request)
+        state = State.fromSession(request)
     except KeyError:
         state = State()
     error = ''
@@ -58,11 +60,13 @@ def quiz(**kwargs):
     result = ''
     correctlyAnswered = False
 
-
     try:
+        quizId = session['quizId']
         lastQuestion = request.form['question']
         result = int(request.form['result'])
         correctlyAnswered = int(lastQuestion) == result
+
+        #database.log_quiz_answer(
     except KeyError:
         print 'keyerror'
     except ValueError:
