@@ -7,7 +7,7 @@ from . import app
 
 import config
 import question
-
+import database
 
 @app.route('/')
 def index():
@@ -60,14 +60,15 @@ def quiz(**kwargs):
     result = ''
     correctlyAnswered = False
 
+    if 'quizId' not in session:
+        session['quizId'] = database.create_quiz(kwargs['type'])
+
     try:
-        quizId = session['quizId']
         lastQuestion = request.form['question']
         result = int(request.form['result'])
         correctlyAnswered = int(lastQuestion) == result
-
     except KeyError:
-        print 'keyerror'
+        pass
     except ValueError:
         print 'user entered invalid input'
         error += 'Please enter a number as your result'
@@ -75,6 +76,7 @@ def quiz(**kwargs):
 
 
     if lastQuestion is not None:
+        database.log_quiz_answer(session['quizId'], lastQuestion, result, correctlyAnswered)
         if correctlyAnswered:
             state.correctlyAnswered += 1
         else:

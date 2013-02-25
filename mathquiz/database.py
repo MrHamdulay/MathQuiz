@@ -46,18 +46,17 @@ def create_user():
     c.close()
 
 def log_quiz_answer(quiz_id, question, answer, correct):
+    g.database.commit()
     c = g.database.cursor()
-    c.execute('INSERT INTO quiz_submissions (quiz_id, question, answer, correct) VALUES (%s, %s, %s)', (quiz_id, str(question), answer, correct))
-    c.commit()
+    c.execute('INSERT INTO quiz_submissions (quiz_id, question, answer, correct) VALUES (%s, %s, %s, %s)', (quiz_id, str(question), answer, correct))
     c.close()
 
 def create_quiz(type):
     c = g.database.cursor()
-    c.execute('INSERT INTO quiz (type, start_time, end_time, answered_by_userid) VALUES (%s, NOW(), -1, %s', (type, session['user_id']))
+    c.execute('INSERT INTO quiz (type, start_time, end_time, answered_by_userid) VALUES (%s, NOW(), NULL, %s)', (type, session['user_id']))
     c.execute('SELECT lastval()')
     quiz_id = c.fetchone()[0]
 
-    c.commit()
     c.close()
 
     return quiz_id
