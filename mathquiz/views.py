@@ -67,7 +67,7 @@ def quiz(typee, difficulty):
             numberRemaining=questionsRemaining,
             question=str(q),
             error=error,
-            answered = userAnswer != '', #has the user answered this question
+            answered = userAnswer is not None, #has the user answered this question
             correct=userAnswerCorrect))
 
         # decrease remaining questions counter if the user answered the question
