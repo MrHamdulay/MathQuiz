@@ -65,13 +65,15 @@ def generateMultDiv(difficulty):
         first = result*second
     elif operation == 'x':
         if difficulty == Difficulties.EASY:
-            first = random.randint(0, 8)
+            first = random.randint(1, 8)
             second = random.randint(0, 10/first)
         elif difficulty == Difficulties.MEDIUM:
-            first = random.randint(0, 12)
+            first = random.randint(1, 12)
             second = random.randint(0, 80/first)
         elif difficulty == Difficulties.HARD:
-            first = random.randint(-12, 12)
+            first = 0
+            while first == 0:
+                first = random.randint(-12, 12)
             second = random.randint(-80/first, 80/first)
 
     return Question(first, operation, second)
