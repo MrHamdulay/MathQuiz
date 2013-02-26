@@ -18,6 +18,8 @@ try:
                 'start_time date,'
                 'answered_by_userid integer,' #user id from users
                 'num_correct integer,'
+                'num_questions integer,'
+                'score integer,'
                 'end_time date)')
 
     c.execute('create table quiz_submissions ('

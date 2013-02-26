@@ -68,10 +68,9 @@ def create_quiz(type):
 
     return quiz_id
 
-def quiz_complete(quiz_id):
+def quiz_complete(quiz_id, num_correct, num_questions, score):
     c = g.database.cursor()
-    c.execute('UPDATE quiz SET end_time = NOW() WHERE id = %s', (quiz_id, ))
-    c.commit()
+    c.execute('UPDATE quiz SET end_time = NOW(), num_correct = %s, num_questions = %s, score = %s  WHERE id = %s', (num_correct, num_questions, score, quiz_id))
     c.close()
 
     g.database.commit()

@@ -96,6 +96,9 @@ def quiz(typee, difficulty):
         if userAnswer is not None:
             state.questionsRemaining -= 1
     else:
+        score = max(0, 10*state.correctlyAnswered - 15 * state.incorrectlyAnswered)
+
+        database.quiz_complete(session['quizId'], state.correctlyAnswered, state.correctlyAnswered+state.incorrectlyAnswered, score)
         response = make_response(render_template('quizComplete.html',
             numberCorrect=state.correctlyAnswered,
             total=state.correctlyAnswered+state.incorrectlyAnswered,
