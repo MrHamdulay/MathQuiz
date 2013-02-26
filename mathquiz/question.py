@@ -11,7 +11,7 @@ class Enum(set):
 
 class Question:
     def __init__(self, first, operation, second):
-        self.answer = eval(str(first)+str(operation)+str(second), {}, {})
+        self.answer = eval(str(first)+operation.replace('x', '*')+str(second), {}, {})
         self.first = first
         self.second = second
         self.operation = operation
@@ -52,16 +52,18 @@ def generateMultDiv(difficulty):
     if operation == '/':
         if difficulty == Difficulties.EASY:
             result = random.randint(0, 10)
-            second = random.randint(0, 5)
+            second = random.randint(1, 5)
         elif difficulty == Difficulties.MEDIUM:
             result = random.randint(0, 12)
-            second = random.randint(0, 20)
+            second = random.randint(1, 20)
         elif difficulty == Difficulties.HARD:
             result = random.randint(-12, 12)
-            second = random.randint(-20, 20)
+            second = 0
+            while second == 0:
+                second = random.randint(-20, 20)
 
         first = result*second
-    elif operation == '*':
+    elif operation == 'x':
         if difficulty == Difficulties.EASY:
             first = random.randint(0, 8)
             second = random.randint(0, 10/first)
