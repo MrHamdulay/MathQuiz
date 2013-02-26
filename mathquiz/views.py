@@ -48,47 +48,40 @@ class State:
 
 
 
-@app.route('/quiz/<type>/<difficulty>', methods=('get', 'post'))
-def quiz(**kwargs):
+@app.route('/quiz/<typee>/<difficulty>', methods=('get', 'post'))
+def quiz(typee, difficulty):
+    #convert string types to internal enums
+    difficulty = question.Difficulties[difficulty.upper()]
+    type = question.Types[typee.upper()]
+
     try:
         state = State.fromSession(request)
     except KeyError:
         state = State()
     error = ''
 
-    lastQuestion = None
-    result = ''
-    correctlyAnswered = False
+    previousAnswer, userAnswer, userAnswerCorrect = None, None, None
 
     if 'quizId' not in session:
-        session['quizId'] = database.create_quiz(kwargs['type'])
+        session['quizId'] = database.create_quiz(type)
+    else:
+        # if we have already started the quiz
+        try:
+            previousAnswer = int(request.form['question'])
+            userAnswer = int(request.form['result'])
+            userAnswerCorrect = previousAnswer == userAnswer
 
-    try:
-        lastQuestion = request.form['question']
-        result = int(request.form['result'])
-        correctlyAnswered = int(lastQuestion) == result
-    except KeyError:
-        pass
-    except ValueError:
-        print 'user entered invalid input'
-        error += 'Please enter a number as your result'
-        lastQuestion = None
-
-
-    if lastQuestion is not None:
-        database.log_quiz_answer(session['quizId'], lastQuestion, result, correctlyAnswered)
-        if correctlyAnswered:
-            state.correctlyAnswered += 1
-        else:
-            state.incorrectlyAnswered += 1
-
+            database.log_quiz_answer(session['quizId'], previousAnswer, userAnswer, userAnswerCorrect)
+            if userAnswerCorrect:
+                state.correctlyAnswered += 1
+            else:
+                state.incorrectlyAnswered += 1
+        except (ValueError, KeyError):
+            error += 'Please enter a number as an answer'
 
     # number of questions remaining in quiz
     # if we still have to ask questions of the user
     if state.questionsRemaining - 1 != 0:
-        difficulty = question.Difficulties[kwargs['difficulty'].upper()]
-        type = question.Types[kwargs['type'].upper()]
-
         q = question.generateQuestion(type, difficulty)
 
         response = make_response(render_template('quiz.html',
@@ -96,11 +89,11 @@ def quiz(**kwargs):
             question=str(q),
             answer=q.answer,
             error=error,
-            answered = result != '', #has the user answered this question
-            correct=correctlyAnswered))
+            answered = userAnswer != '', #has the user answered this question
+            correct=userAnswerCorrect))
 
         # decrease remaining questions counter if the user answered the question
-        if result:
+        if userAnswer is not None:
             state.questionsRemaining -= 1
     else:
         response = make_response(render_template('quizComplete.html',

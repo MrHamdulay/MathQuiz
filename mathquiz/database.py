@@ -16,6 +16,8 @@ def create_database():
     db_schema_version = c.fetchone()[0]
     c.close()
 
+    g.database.commit()
+
     if str(SCHEMA_VERSION) != db_schema_version:
         raise Exception('Database schema version not the same as app version, UPGRADE')
 
@@ -45,11 +47,14 @@ def create_user():
             raise Exception('We dont have an internal user id for the current session somehow or other')
     c.close()
 
-def log_quiz_answer(quiz_id, question, answer, correct):
     g.database.commit()
+
+def log_quiz_answer(quiz_id, question, answer, correct):
     c = g.database.cursor()
     c.execute('INSERT INTO quiz_submissions (quiz_id, question, answer, correct) VALUES (%s, %s, %s, %s)', (quiz_id, str(question), answer, correct))
     c.close()
+
+    g.database.commit()
 
 def create_quiz(type):
     c = g.database.cursor()
@@ -59,6 +64,8 @@ def create_quiz(type):
 
     c.close()
 
+    g.database.commit()
+
     return quiz_id
 
 def quiz_complete(quiz_id):
@@ -66,3 +73,5 @@ def quiz_complete(quiz_id):
     c.execute('UPDATE quiz SET end_time = NOW() WHERE id = %s', (quiz_id, ))
     c.commit()
     c.close()
+
+    g.database.commit()
