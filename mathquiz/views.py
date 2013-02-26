@@ -27,20 +27,18 @@ def quiz(typee, difficulty):
         incorrectlyAnswered = int(session['incorrectlyAnswered'])
         startTime = float(session['startTime'])
     except KeyError:
-        questionsRemaining = 5
-        correctlyAnswered = 0
-        incorrectlyAnswered = 0
-        startTime = time()
+        # force a new quiz
+        session['quizId'] = -1
     error = ''
 
     previousAnswer, userAnswer, userAnswerCorrect = None, None, None
 
-    if 'quizId' not in session:
-        session['quizId'] = database.create_quiz(type)
-        session['startTime'] = time()
-        session['questionsRemaining'] = 5
-        session['correctlyAnswered'] = 0
-        session['incorrectlyAnswered'] = 0
+    if 'quizId' not in session or session['quizId'] == -1:
+        quizId = session['quizId'] = database.create_quiz(type)
+        startTime = session['startTime'] = time()
+        questionsRemaining = session['questionsRemaining'] = 5
+        correctlyAnswered = session['correctlyAnswered'] = 0
+        incorrectlyAnswered = session['incorrectlyAnswered'] = 0
 
     else:
         # if we have already started the quiz
@@ -75,12 +73,15 @@ def quiz(typee, difficulty):
             questionsRemaining -= 1
     else:
         score = max(0, 10*correctlyAnswered - 15 * incorrectlyAnswered)
+        print session['quizId']
 
         database.quiz_complete(session['quizId'], correctlyAnswered, correctlyAnswered+incorrectlyAnswered, score)
         response = make_response(render_template('quizComplete.html',
             numberCorrect=correctlyAnswered,
             total=correctlyAnswered+incorrectlyAnswered,
             time=round(time()-startTime, 1)))
+
+        session['quizId'] = -1
 
 
     # persist changes to session
