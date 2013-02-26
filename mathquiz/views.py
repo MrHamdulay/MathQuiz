@@ -67,7 +67,7 @@ def quiz(typee, difficulty):
     else:
         # if we have already started the quiz
         try:
-            previousAnswer = int(request.form['question'])
+            previousAnswer = session['previousQuestionAnswer']
             userAnswer = int(request.form['result'])
             userAnswerCorrect = previousAnswer == userAnswer
 
@@ -83,11 +83,11 @@ def quiz(typee, difficulty):
     # if we still have to ask questions of the user
     if state.questionsRemaining - 1 != 0:
         q = question.generateQuestion(type, difficulty)
+        session['previousQuestionAnswer'] = q.answer
 
         response = make_response(render_template('quiz.html',
             numberRemaining=state.questionsRemaining,
             question=str(q),
-            answer=q.answer,
             error=error,
             answered = userAnswer != '', #has the user answered this question
             correct=userAnswerCorrect))
