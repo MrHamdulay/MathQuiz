@@ -11,41 +11,8 @@ import database
 
 @app.route('/')
 def index():
+    del session['quizId']
     return render_template('index.html')
-
-class State:
-    QUESTIONS_REMAINING_COOKIE = 'questionsRemaining'
-    CORRECTLY_ANSWERED_COOKIE = 'correctlyAnswered'
-    INCORRECTLY_ANSWERED_COOKIE = 'incorrectlyAnswered'
-    START_TIME_COOKIE = 'time'
-
-    def __init__(self, questionsRemaining = 5, correctlyAnswered = 0, incorrectlyAnswered = 0, startTime=time()):
-        self.questionsRemaining = questionsRemaining
-        self.correctlyAnswered = correctlyAnswered
-        self.incorrectlyAnswered = incorrectlyAnswered
-        self.startTime = startTime
-
-    def updateState(self, response):
-        session[State.QUESTIONS_REMAINING_COOKIE] = self.questionsRemaining
-        session[State.CORRECTLY_ANSWERED_COOKIE] = self.correctlyAnswered
-        session[State.INCORRECTLY_ANSWERED_COOKIE] = self.incorrectlyAnswered
-        session[State.START_TIME_COOKIE] = self.startTime
-
-    def reset(self):
-        self.questionsRemaining = 5
-        self.correctlyAnswered = 0
-        self.incorrectlyAnswered = 0
-        self.startTime = time()
-
-    @staticmethod
-    def fromSession(request):
-        questionsRemaining = int(session[State.QUESTIONS_REMAINING_COOKIE])
-        correctlyAnswered = int(session[State.CORRECTLY_ANSWERED_COOKIE])
-        incorrectlyAnswered = int(session[State.INCORRECTLY_ANSWERED_COOKIE])
-        startTime = float(session[State.START_TIME_COOKIE])
-
-        return State(questionsRemaining, correctlyAnswered, incorrectlyAnswered, startTime)
-
 
 
 @app.route('/quiz/<typee>/<difficulty>', methods=('get', 'post'))
@@ -55,15 +22,26 @@ def quiz(typee, difficulty):
     type = question.Types[typee.upper()]
 
     try:
-        state = State.fromSession(request)
+        questionsRemaining = int(session['questionsRemaining'])
+        correctlyAnswered = int(session['correctlyAnswered'])
+        incorrectlyAnswered = int(session['incorrectlyAnswered'])
+        startTime = float(session['startTime'])
     except KeyError:
-        state = State()
+        questionsRemaining = 5
+        correctlyAnswered = 0
+        incorrectlyAnswered = 0
+        startTime = time()
     error = ''
 
     previousAnswer, userAnswer, userAnswerCorrect = None, None, None
 
     if 'quizId' not in session:
         session['quizId'] = database.create_quiz(type)
+        session['startTime'] = time()
+        session['questionsRemaining'] = 5
+        session['correctlyAnswered'] = 0
+        session['incorrectlyAnswered'] = 0
+
     else:
         # if we have already started the quiz
         try:
@@ -73,20 +51,20 @@ def quiz(typee, difficulty):
 
             database.log_quiz_answer(session['quizId'], previousAnswer, userAnswer, userAnswerCorrect)
             if userAnswerCorrect:
-                state.correctlyAnswered += 1
+               correctlyAnswered += 1
             else:
-                state.incorrectlyAnswered += 1
+               incorrectlyAnswered += 1
         except (ValueError, KeyError):
             error += 'Please enter a number as an answer'
 
     # number of questions remaining in quiz
     # if we still have to ask questions of the user
-    if state.questionsRemaining - 1 != 0:
+    if questionsRemaining - 1 != 0:
         q = question.generateQuestion(type, difficulty)
         session['previousQuestionAnswer'] = q.answer
 
         response = make_response(render_template('quiz.html',
-            numberRemaining=state.questionsRemaining,
+            numberRemaining=questionsRemaining,
             question=str(q),
             error=error,
             answered = userAnswer != '', #has the user answered this question
@@ -94,18 +72,22 @@ def quiz(typee, difficulty):
 
         # decrease remaining questions counter if the user answered the question
         if userAnswer is not None:
-            state.questionsRemaining -= 1
+            questionsRemaining -= 1
     else:
-        score = max(0, 10*state.correctlyAnswered - 15 * state.incorrectlyAnswered)
+        score = max(0, 10*correctlyAnswered - 15 * incorrectlyAnswered)
 
-        database.quiz_complete(session['quizId'], state.correctlyAnswered, state.correctlyAnswered+state.incorrectlyAnswered, score)
+        database.quiz_complete(session['quizId'], correctlyAnswered, correctlyAnswered+incorrectlyAnswered, score)
         response = make_response(render_template('quizComplete.html',
-            numberCorrect=state.correctlyAnswered,
-            total=state.correctlyAnswered+state.incorrectlyAnswered,
-            time=round(time()-state.startTime, 1)))
-        state.reset()
+            numberCorrect=correctlyAnswered,
+            total=correctlyAnswered+incorrectlyAnswered,
+            time=round(time()-startTime, 1)))
 
-    state.updateState(response)
+
+    # persist changes to session
+    session['questionsRemaining'] = questionsRemaining
+    session['correctlyAnswered'] = correctlyAnswered
+    session['incorrectlyAnswered'] = incorrectlyAnswered
+
     return response
 
 @app.route('/leaderboard')
