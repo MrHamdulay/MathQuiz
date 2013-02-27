@@ -7,12 +7,14 @@ db = psycopg2.connect('user=%s' % config.database_user)
 c = db.cursor()
 
 try:
-    c.execute('create table users ('
+    c.execute('CREATE TABLE users ('
                 'id SERIAL,'
-                'mxit_userid varchar(100) unique,'
-                'joined_date date)')
+                'mxit_userid varchar(100) UNIQUE,'
+                'joined_date date DEFAULT NOW(),'
+                'score integer DEFAULT 0'
+                ')')
 
-    c.execute('create table quiz ('
+    c.execute('CREATE TABLE quiz ('
                 'id SERIAL,'
                 'type varchar(20),'
                 'start_time date,'
@@ -22,17 +24,17 @@ try:
                 'score integer,'
                 'end_time date)')
 
-    c.execute('create table quiz_submissions ('
+    c.execute('CREATE TABLE quiz_submissions ('
                 'id SERIAL,'
-                'quiz_id integer,'
-                'question varchar(50),'
-                'answer integer,'
-                'correct boolean)') #user given answer, not necessarily correct
+                'quiz_id INTEGER,'
+                'question VARCHAR(50),'
+                'answer INTEGER,'
+                'correct BOOLEAN)') #user given answer, not necessarily correct
 
-    c.execute('create table app_settings ('
-                'key varchar, '
-                'value varchar)')
-    c.execute("insert into app_settings (key, value) values ('schema_version', '%s')", (SCHEMA_VERSION, ))
+    c.execute('CREATE TABLE app_settings ('
+                'key VARCHAR, '
+                'value VARCHAR)')
+    c.execute("INSERT INTO app_settings (key, value) VALUES ('schema_version', '%s')", (SCHEMA_VERSION, ))
     db.commit()
 except psycopg2.ProgrammingError, e:
     print 'You have already created databases. To update schema first clear databsae. We dont upgrade '

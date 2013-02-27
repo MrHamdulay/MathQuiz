@@ -40,10 +40,10 @@ def create_user():
     try:
         c.execute('INSERT INTO users (mxit_userid, joined_date) VALUES (%s, NOW())', (mxit_user_id, ))
         c.execute('SELECT lastval()')
-        session['user_id'] = c.fetchone()[0]
+        session['userId'] = c.fetchone()[0]
     except psycopg2.IntegrityError:
         # this isn't an error. We just don't check whether we've added this user before
-        if 'user_id' not in session:
+        if 'userId' not in session:
             raise Exception('We dont have an internal user id for the current session somehow or other')
     c.close()
 
@@ -58,7 +58,7 @@ def log_quiz_answer(quiz_id, question, answer, correct):
 
 def create_quiz(type):
     c = g.database.cursor()
-    c.execute('INSERT INTO quiz (type, start_time, end_time, answered_by_userid) VALUES (%s, NOW(), NULL, %s)', (type, session['user_id']))
+    c.execute('INSERT INTO quiz (type, start_time, end_time, answered_by_userid) VALUES (%s, NOW(), NULL, %s)', (type, session['userId']))
     c.execute('SELECT lastval()')
     quiz_id = c.fetchone()[0]
 
@@ -71,6 +71,12 @@ def create_quiz(type):
 def quiz_complete(quiz_id, num_correct, num_questions, score):
     c = g.database.cursor()
     c.execute('UPDATE quiz SET end_time = NOW(), num_correct = %s, num_questions = %s, score = %s  WHERE id = %s', (num_correct, num_questions, score, quiz_id))
+    c.execute('UPDATE users SET score = score + %s WHERE id = %s', (score, session['userId']))
     c.close()
 
     g.database.commit()
+
+def leaderboard(page):
+    c = g.database.cursor()
+    #c.execute('
+    pass

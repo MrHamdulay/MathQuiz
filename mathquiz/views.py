@@ -11,7 +11,7 @@ import database
 
 @app.route('/')
 def index():
-    del session['quizId']
+    session['quizId'] = -1
     return render_template('index.html')
 
 
@@ -72,7 +72,8 @@ def quiz(typee, difficulty):
         if userAnswer is not None:
             questionsRemaining -= 1
     else:
-        score = max(0, 10*correctlyAnswered - 15 * incorrectlyAnswered)
+        scoreMultipliers = {question.Difficulties.EASY: 1, question.Difficulties.MEDIUM: 2, question.Difficulties.HARD: 3}
+        score = max(0, 10*correctlyAnswered * scoreMultipliers[difficulty] - 5 * incorrectlyAnswered)
         print session['quizId']
 
         database.quiz_complete(session['quizId'], correctlyAnswered, correctlyAnswered+incorrectlyAnswered, score)
