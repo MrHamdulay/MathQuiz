@@ -44,8 +44,11 @@ def create_user():
     except psycopg2.IntegrityError:
         # this isn't an error. We just don't check whether we've added this user before
         if 'userId' not in session:
-            raise Exception('We dont have an internal user id for the current session somehow or other')
-    c.close()
+            c.execute('SELECT id, username FROM users WHERE mxit_userid = %s LIMIT 1', (mxit_user_id, ))
+            session['userId'], session['username'] = c.fetchone()
+            #raise Exception('We dont have an internal user id for the current session somehow or other')
+    finally:
+        c.close()
 
     g.database.commit()
 
@@ -79,8 +82,9 @@ def quiz_complete(quiz_id, num_correct, num_questions, score):
 def leaderboard(page):
     c = g.database.cursor()
 
-    c.execute('SELECT * from users ORDER BY score LIMIT 10 OFFSET %s', (page*10,))
+    c.execute('SELECT username, score from users ORDER BY score LIMIT 10 OFFSET %s', (page*10,))
     result = c.fetchall()
+    print result
     c.close()
 
     return result
