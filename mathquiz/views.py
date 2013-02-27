@@ -82,6 +82,7 @@ def quiz(typee, difficulty):
         response = make_response(render_template('quiz.html',
             numberRemaining=questionsRemaining,
             question=str(q),
+            difficulty='Easy',
             answered = userAnswer is not None, #has the user answered this question
             correct=userAnswerCorrect))
 
