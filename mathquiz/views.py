@@ -16,7 +16,6 @@ def set_username():
         if database.username_exists(username):
             return render_template('set_username.html', username_exists = username)
         else:
-            flash('username set')
             session['username'] = username
             database.set_username(username)
             return redirect('/')
@@ -28,7 +27,7 @@ def index():
     session['quizId'] = -1
 
     # if the user has not given us a username we should probably ask for one
-    if not session.has_key('username'):
+    if not session.has_key('username') or session['username'] is None:
        return redirect('/user/set_username')
 
     return render_template('index.html', username=session['username'])

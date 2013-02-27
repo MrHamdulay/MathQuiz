@@ -41,11 +41,17 @@ def create_user():
         c.execute('INSERT INTO users (mxit_userid, joined_date) VALUES (%s, NOW())', (mxit_user_id, ))
         c.execute('SELECT lastval()')
         session['userId'] = c.fetchone()[0]
+        g.database.commit()
     except psycopg2.IntegrityError:
+        g.database.rollback()
         # this isn't an error. We just don't check whether we've added this user before
         if 'userId' not in session:
-            c.execute('SELECT id, username FROM users WHERE mxit_userid = %s LIMIT 1', (mxit_user_id, ))
-            session['userId'], session['username'] = c.fetchone()
+            try:
+                c2 = g.database.cursor()
+                c2.execute('SELECT id, username FROM users WHERE mxit_userid = %s LIMIT 1', (str(mxit_user_id), ))
+                session['userId'], session['username'] = c2.fetchone()
+            finally:
+                c2.close()
     finally:
         c.close()
 
