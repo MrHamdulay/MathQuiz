@@ -11,7 +11,7 @@ try:
                 'id SERIAL,'
                 'username VARCHAR UNIQUE,'
                 'mxit_userid varchar(100) UNIQUE,'
-                'joined_date date DEFAULT NOW(),'
+                'joined_date timestamp DEFAULT NOW(),'
                 'score integer DEFAULT 0'
                 ')')
     c.execute('CREATE INDEX ON users (score)')
@@ -19,12 +19,14 @@ try:
     c.execute('CREATE TABLE quiz ('
                 'id SERIAL,'
                 'type varchar(20),'
-                'start_time date,'
+                'start_time timestamp,'
                 'answered_by_userid integer,' #user id from users
                 'num_correct integer,'
                 'num_questions integer,'
                 'score integer,'
-                'end_time date)')
+                'end_time timestamp)')
+    c.execute('CREATE INDEX complete_time ON quiz ((end_time - start_time))')
+
 
     c.execute('CREATE TABLE quiz_submissions ('
                 'id SERIAL,'

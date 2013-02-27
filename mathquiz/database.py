@@ -111,4 +111,3 @@ def username_exists(username):
 
 def fetch_user_rank(user_id):
     c = g.database.cursor()
-    c.execute('
