@@ -33,7 +33,7 @@ def index():
     return render_template('index.html',
             username=session['username'],
             difficulty='Easy',
-            )
+        )
 
 
 @app.route('/quiz/<typee>/<difficulty>', methods=('get', 'post'))

@@ -94,7 +94,7 @@ def quiz_complete(quiz_id, num_correct, num_questions, score):
 def leaderboard(page):
     c = g.database.cursor()
 
-    c.execute('SELECT username, score from users ORDER BY score LIMIT 10 OFFSET %s', (page*10,))
+    c.execute('SELECT username, score from users ORDER BY score DESC LIMIT 10 OFFSET %s', (page*10,))
     result = c.fetchall()
     print result
     c.close()
@@ -108,3 +108,7 @@ def username_exists(username):
     c.close()
 
     return count > 0
+
+def fetch_user_rank(user_id):
+    c = g.database.cursor()
+    c.execute('
