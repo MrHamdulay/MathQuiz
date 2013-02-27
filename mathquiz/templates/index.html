@@ -2,7 +2,14 @@
 <html>
     <body>
         <p style="color: rgb(205, 20, 0); ">Math Workout</p>
-        <p>Welcome <i>SomePerson1</i> (256/1209)</p>
+        <p>Welcome <i>{{ username }}</i> (256/1209)</p>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                <p style="color: rgb(220, 0, 0); "><b>{{ message }}</b></p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         <p>Level: Easy (do the I'm feeling ready test to level up)</p>
         <p>
             Quiz<br />

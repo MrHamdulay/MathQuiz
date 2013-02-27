@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from flask import render_template, request, make_response, session
+from flask import render_template, request, make_response, session, redirect, url_for, flash
 import random
 from time import time
 
@@ -9,10 +9,29 @@ import config
 import question
 import database
 
+@app.route('/user/set_username', methods=('get', 'post'))
+def set_username():
+    if 'username' in request.form:
+        username = request.form['username']
+        if database.username_exists(username):
+            return render_template('set_username.html', username_exists = username)
+        else:
+            flash('username set')
+            session['username'] = username
+            database.set_username(username)
+            return redirect('/')
+    else:
+        return render_template('set_username.html')
+
 @app.route('/')
 def index():
     session['quizId'] = -1
-    return render_template('index.html')
+
+    # if the user has not given us a username we should probably ask for one
+    if not session.has_key('username'):
+       return redirect('/user/set_username')
+
+    return render_template('index.html', username=session['username'])
 
 
 @app.route('/quiz/<typee>/<difficulty>', methods=('get', 'post'))
@@ -29,7 +48,6 @@ def quiz(typee, difficulty):
     except KeyError:
         # force a new quiz
         session['quizId'] = -1
-    error = ''
 
     previousAnswer, userAnswer, userAnswerCorrect = None, None, None
 
@@ -53,7 +71,7 @@ def quiz(typee, difficulty):
             else:
                incorrectlyAnswered += 1
         except (ValueError, KeyError):
-            error += 'Please enter a number as an answer'
+            flash('Please enter a number as an answer')
 
     # number of questions remaining in quiz
     # if we still have to ask questions of the user
@@ -64,7 +82,6 @@ def quiz(typee, difficulty):
         response = make_response(render_template('quiz.html',
             numberRemaining=questionsRemaining,
             question=str(q),
-            error=error,
             answered = userAnswer is not None, #has the user answered this question
             correct=userAnswerCorrect))
 

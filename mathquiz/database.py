@@ -46,9 +46,15 @@ def create_user():
         if 'userId' not in session:
             c.execute('SELECT id, username FROM users WHERE mxit_userid = %s LIMIT 1', (mxit_user_id, ))
             session['userId'], session['username'] = c.fetchone()
-            #raise Exception('We dont have an internal user id for the current session somehow or other')
     finally:
         c.close()
+
+    g.database.commit()
+
+def set_username(username):
+    c = g.database.cursor()
+    c.execute('UPDATE users SET username = %s WHERE id = %s', (username, session['userId']))
+    c.close()
 
     g.database.commit()
 
@@ -88,3 +94,11 @@ def leaderboard(page):
     c.close()
 
     return result
+
+def username_exists(username):
+    c = g.database.cursor()
+    c.execute('SELECT count(*) FROM users WHERE username = %s', (username, ))
+    count = c.fetchone()[0]
+    c.close()
+
+    return count > 0

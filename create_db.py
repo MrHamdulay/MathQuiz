@@ -9,6 +9,7 @@ c = db.cursor()
 try:
     c.execute('CREATE TABLE users ('
                 'id SERIAL,'
+                'username VARCHAR UNIQUE,'
                 'mxit_userid varchar(100) UNIQUE,'
                 'joined_date date DEFAULT NOW(),'
                 'score integer DEFAULT 0'

@@ -1,0 +1,12 @@
+<html>
+    <body>
+        {% if username_exists %}
+        Username {{ username_exists }} exists please choose another <br />
+        {% endif %}
+        <form action="/user/set_username" method="post">
+            Please select a username: 
+            <input type="text" name="username" />
+            <input type="submit" />
+        </form>
+    </body>
+</html>
