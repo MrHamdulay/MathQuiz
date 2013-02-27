@@ -30,7 +30,10 @@ def index():
     if not session.has_key('username') or session['username'] is None:
        return redirect('/user/set_username')
 
-    return render_template('index.html', username=session['username'])
+    return render_template('index.html',
+            username=session['username'],
+            difficulty='Easy',
+            )
 
 
 @app.route('/quiz/<typee>/<difficulty>', methods=('get', 'post'))
@@ -81,7 +84,6 @@ def quiz(typee, difficulty):
         response = make_response(render_template('quiz.html',
             numberRemaining=questionsRemaining,
             question=str(q),
-            difficulty='Easy',
             answered = userAnswer is not None, #has the user answered this question
             correct=userAnswerCorrect))
 
