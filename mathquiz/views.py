@@ -95,6 +95,7 @@ def quiz(typee, difficulty):
 
         database.quiz_complete(session['quizId'], correctlyAnswered, correctlyAnswered+incorrectlyAnswered, score)
         response = make_response(render_template('quizComplete.html',
+            correct=userAnswerCorrect,
             numberCorrect=correctlyAnswered,
             total=correctlyAnswered+incorrectlyAnswered,
             time=round(time()-startTime, 1)))

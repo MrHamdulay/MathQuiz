@@ -1,6 +1,11 @@
 <!doctype html>
 <html>
     <body>
+        {% if correct %}
+        <p style="color: rgb(0, 200, 0);">Correct!</p>
+        {% else %}
+        <p style="color: rgb(200, 0, 0);">Incorrect :(</p>
+        {% endif %}
         You completed the quiz. Go you.<br />
         You got {{ numberCorrect }} correct out of {{ total }} in {{ time }} seconds.<br />
         <a href="/">Home</a>
