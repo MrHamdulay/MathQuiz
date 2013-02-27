@@ -92,7 +92,7 @@ def quiz(typee, difficulty):
 
     return response
 
-@app.route('/leaderboard')
-def leaderboard():
-    return render_template('leaderboard.html', leaderboard=(('yaseen', '0:05'), ('shuaib parker', '0:05'), ('salaama maniveld', '0:06')))
-
+@app.route('/leaderboard', defaults={'page': 0})
+@app.route('/leaderboard/<int:page>')
+def leaderboard(page):
+    return render_template('leaderboard.html', leaderboard=database.leaderboard(page))

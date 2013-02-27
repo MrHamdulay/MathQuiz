@@ -78,5 +78,9 @@ def quiz_complete(quiz_id, num_correct, num_questions, score):
 
 def leaderboard(page):
     c = g.database.cursor()
-    #c.execute('
-    pass
+
+    c.execute('SELECT * from users ORDER BY score LIMIT 10 OFFSET %s', (page*10,))
+    result = c.fetchall()
+    c.close()
+
+    return result
