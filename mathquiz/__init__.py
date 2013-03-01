@@ -1,6 +1,6 @@
 from flask import Flask
 
-SCHEMA_VERSION = 5
+SCHEMA_VERSION = 6
 import config
 
 app = Flask(__name__)

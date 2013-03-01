@@ -52,6 +52,7 @@ def quiz(typee, difficulty):
         session['quizId'] = -1
 
     previousAnswer, userAnswer, userAnswerCorrect = None, None, None
+    scoring = ''
 
     if 'quizId' not in session or session['quizId'] == -1:
         quizId = session['quizId'] = database.create_quiz(type)
@@ -67,7 +68,16 @@ def quiz(typee, difficulty):
             userAnswer = int(request.form['result'])
             userAnswerCorrect = previousAnswer == userAnswer
 
-            database.log_quiz_answer(session['userId'], session['quizId'], previousAnswer, userAnswer, userAnswerCorrect)
+            score = 5 if userAnswerCorrect else 0
+
+            # calculate streak bonus
+            streakLength = database.calculate_streak_length(session['userId'], session['quizId'])
+            streakScore = 0 if streakLength < 5 else 5 + streakLength
+            score += streakScore
+            if streakScore != 0:
+                scoring = 'Streak of %d. %d bonus points!' % (streakLength, streakScore)
+
+            database.quiz_answer(session['userId'], session['quizId'], previousAnswer, userAnswer, userAnswerCorrect, score)
             if userAnswerCorrect:
                correctlyAnswered += 1
             else:
@@ -84,6 +94,7 @@ def quiz(typee, difficulty):
         response = make_response(render_template('quiz.html',
             numberRemaining=questionsRemaining,
             question=str(q),
+            scoring=scoring,
             answered = userAnswer is not None, #has the user answered this question
             correct=userAnswerCorrect))
 
@@ -91,24 +102,11 @@ def quiz(typee, difficulty):
         if userAnswer is not None:
             questionsRemaining -= 1
     else:
-        scoring = ''
         # calculate score
-        scoreMultipliers = {question.Difficulties.EASY: 1, question.Difficulties.MEDIUM: 2, question.Difficulties.HARD: 3}
-        score = max(0, 10*correctlyAnswered * scoreMultipliers[difficulty] - 5 * incorrectlyAnswered)
-
-        # calculate streak bonus
-        streakLength = database.calculate_streak_bonus(session['userId'])
-        print 'streak length ', streakLength
-        streakScore = 0 if streak < 5 else 10 + streak
-        score += streakScore
-        if streak != 0:
-            scoring = 'Streak of %d. %d bonus points!' % (streakLength, streakScore)
-
-        database.quiz_complete(session['quizId'], correctlyAnswered, correctlyAnswered+incorrectlyAnswered, score)
+        database.quiz_complete(session['quizId'], correctlyAnswered, correctlyAnswered+incorrectlyAnswered)
         response = make_response(render_template('quizComplete.html',
             correct=userAnswerCorrect,
             numberCorrect=correctlyAnswered,
-            scoring=scoring,
             total=correctlyAnswered+incorrectlyAnswered,
             time=round(time()-startTime, 1)))
 

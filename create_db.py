@@ -35,6 +35,7 @@ try:
                 'question VARCHAR(50),'
                 'answer INTEGER,'
                 'correct BOOLEAN,'
+                'score INTEGER,'
                 'submit_time TIMESTAMP DEFAULT NOW()'
                 ')') #user given answer, not necessarily correct
     c.execute('CREATE INDEX streak ON quiz_submissions (user_id, submit_time, correct)')

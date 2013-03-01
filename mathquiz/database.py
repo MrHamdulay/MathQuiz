@@ -64,9 +64,9 @@ def set_username(username):
 
     g.database.commit()
 
-def log_quiz_answer(user_id, quiz_id, question, answer, correct):
+def quiz_answer(user_id, quiz_id, question, answer, correct, score):
     c = g.database.cursor()
-    c.execute('INSERT INTO quiz_submissions (user_id, quiz_id, question, answer, correct) VALUES (%s, %s, %s, %s, %s)', (user_id, quiz_id, str(question), answer, correct))
+    c.execute('INSERT INTO quiz_submissions (user_id, quiz_id, question, answer, correct, score) VALUES (%s, %s, %s, %s, %s, %s)', (user_id, quiz_id, str(question), answer, correct, score))
     c.close()
 
     g.database.commit()
@@ -83,22 +83,25 @@ def create_quiz(type):
 
     return quiz_id
 
-def quiz_complete(quiz_id, num_correct, num_questions, score):
+def quiz_complete(quiz_id, num_correct, num_questions):
     c = g.database.cursor()
-    c.execute('UPDATE quiz SET end_time = NOW(), num_correct = %s, num_questions = %s, score = %s  WHERE id = %s', (num_correct, num_questions, score, quiz_id))
+    c.execute('SELECT sum(score) as total_score FROM quiz_submissions WHERE quiz_id = %s', (quiz_id, ))
+    score = c.fetchone()[0]
+    c.execute('UPDATE quiz SET end_time = NOW(), num_correct = %s, num_questions = %s, score =  %s WHERE id = %s', (num_correct, num_questions, score, quiz_id))
     c.execute('UPDATE users SET score = score + %s WHERE id = %s', (score, session['userId']))
     c.close()
 
     g.database.commit()
 
-def calculate_streak_length(user_id):
+def calculate_streak_length(user_id, cur_quiz_id):
     c = g.database.cursor()
-    c.execute('SELECT correct FROM quiz_submissions WHERE user_id = %s ORDER BY submit_time DESC LIMIT 10', (user_id, ))
+    c.execute('SELECT correct, quiz_id FROM quiz_submissions WHERE user_id = %s ORDER BY submit_time DESC LIMIT 10', (user_id, ))
 
     streakLength = 0
-    for correct, in c:
-        print i
-        if not correct:
+    for correct, quiz_id in c:
+        print correct, quiz_id
+        # streak began or we moved over to the previous quiz
+        if not correct or quiz_id != cur_quiz_id:
             break
         streakLength += 1
 
