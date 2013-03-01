@@ -1,7 +1,5 @@
-<!doctype html>
-<html>
-    <body>
-        {% with messages = get_flashed_messages() %}
+{% extends template.html %}
+{% with messages = get_flashed_messages() %}
             {% if messages %}
             {% for message in messages %}
             <p style="color: rgb(220, 0, 0); "><b>{{ message }}</b></p>

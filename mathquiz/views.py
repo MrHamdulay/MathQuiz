@@ -67,7 +67,7 @@ def quiz(typee, difficulty):
             userAnswer = int(request.form['result'])
             userAnswerCorrect = previousAnswer == userAnswer
 
-            database.log_quiz_answer(session['quizId'], previousAnswer, userAnswer, userAnswerCorrect)
+            database.log_quiz_answer(session['userId'], session['quizId'], previousAnswer, userAnswer, userAnswerCorrect)
             if userAnswerCorrect:
                correctlyAnswered += 1
             else:

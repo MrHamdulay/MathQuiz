@@ -64,9 +64,9 @@ def set_username(username):
 
     g.database.commit()
 
-def log_quiz_answer(quiz_id, question, answer, correct):
+def log_quiz_answer(user_id, quiz_id, question, answer, correct):
     c = g.database.cursor()
-    c.execute('INSERT INTO quiz_submissions (quiz_id, question, answer, correct) VALUES (%s, %s, %s, %s)', (quiz_id, str(question), answer, correct))
+    c.execute('INSERT INTO quiz_submissions (user_id, quiz_id, question, answer, correct) VALUES (%s, %s, %s, %s, %s)', (user_id, quiz_id, str(question), answer, correct))
     c.close()
 
     g.database.commit()

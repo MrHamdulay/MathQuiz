@@ -30,10 +30,14 @@ try:
 
     c.execute('CREATE TABLE quiz_submissions ('
                 'id SERIAL,'
+                'user_id INTEGER,'
                 'quiz_id INTEGER,'
                 'question VARCHAR(50),'
                 'answer INTEGER,'
-                'correct BOOLEAN)') #user given answer, not necessarily correct
+                'correct BOOLEAN,'
+                'submit_time TIMESTAMP DEFAULT NOW()'
+                ')') #user given answer, not necessarily correct
+    c.execute('CREATE INDEX streak ON quiz_submissions (user_id, submit_time) WHERE correct IS TRUE')
 
     c.execute('CREATE TABLE app_settings ('
                 'key VARCHAR, '
