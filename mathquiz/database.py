@@ -91,6 +91,22 @@ def quiz_complete(quiz_id, num_correct, num_questions, score):
 
     g.database.commit()
 
+def calculate_streak_length(user_id):
+    c = g.database.cursor()
+    c.execute('SELECT correct FROM quiz_submissions WHERE user_id = %s ORDER BY submit_time DESC LIMIT 10', (user_id, ))
+
+    streakLength = 0
+    for correct, in c:
+        print i
+        if not correct:
+            break
+        streakLength += 1
+
+    c.close()
+
+    return streakLength
+
+
 def leaderboard(page):
     c = g.database.cursor()
 

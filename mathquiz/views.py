@@ -56,7 +56,7 @@ def quiz(typee, difficulty):
     if 'quizId' not in session or session['quizId'] == -1:
         quizId = session['quizId'] = database.create_quiz(type)
         startTime = session['startTime'] = time()
-        questionsRemaining = session['questionsRemaining'] = 5
+        questionsRemaining = session['questionsRemaining'] = 15
         correctlyAnswered = session['correctlyAnswered'] = 0
         incorrectlyAnswered = session['incorrectlyAnswered'] = 0
 
@@ -91,14 +91,24 @@ def quiz(typee, difficulty):
         if userAnswer is not None:
             questionsRemaining -= 1
     else:
+        scoring = ''
         # calculate score
         scoreMultipliers = {question.Difficulties.EASY: 1, question.Difficulties.MEDIUM: 2, question.Difficulties.HARD: 3}
         score = max(0, 10*correctlyAnswered * scoreMultipliers[difficulty] - 5 * incorrectlyAnswered)
+
+        # calculate streak bonus
+        streakLength = database.calculate_streak_bonus(session['userId'])
+        print 'streak length ', streakLength
+        streakScore = 0 if streak < 5 else 10 + streak
+        score += streakScore
+        if streak != 0:
+            scoring = 'Streak of %d. %d bonus points!' % (streakLength, streakScore)
 
         database.quiz_complete(session['quizId'], correctlyAnswered, correctlyAnswered+incorrectlyAnswered, score)
         response = make_response(render_template('quizComplete.html',
             correct=userAnswerCorrect,
             numberCorrect=correctlyAnswered,
+            scoring=scoring,
             total=correctlyAnswered+incorrectlyAnswered,
             time=round(time()-startTime, 1)))
 
