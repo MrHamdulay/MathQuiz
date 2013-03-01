@@ -91,9 +91,9 @@ def quiz(typee, difficulty):
         if userAnswer is not None:
             questionsRemaining -= 1
     else:
+        # calculate score
         scoreMultipliers = {question.Difficulties.EASY: 1, question.Difficulties.MEDIUM: 2, question.Difficulties.HARD: 3}
         score = max(0, 10*correctlyAnswered * scoreMultipliers[difficulty] - 5 * incorrectlyAnswered)
-        print session['quizId']
 
         database.quiz_complete(session['quizId'], correctlyAnswered, correctlyAnswered+incorrectlyAnswered, score)
         response = make_response(render_template('quizComplete.html',

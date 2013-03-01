@@ -1,31 +1,27 @@
-{% extends template.html %}
+{% extends "template.html" %}
+{% block body %}
 {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            {% for message in messages %}
-            <p style="color: rgb(220, 0, 0); "><b>{{ message }}</b></p>
-            {% endfor %}
-            {% endif %}
-        {% endwith %}
-        {% if answered %}
-            {% if correct %}
-            <p style="color: rgb(0, 200, 0);">Correct!</p>
-            {% else %}
-            <p style="color: rgb(200, 0, 0);">Incorrect :(</p>
-            {% endif %}
-        {% endif %}
-        <p>{{ numberRemaining }} questions remaining</p>
-        <form action="" method="post">
-            <p>What is <b>{{ question }}</b>?</p>
-            <input type="text" name="result" />
-            <input type="submit" />
-        </form>
+    {% if messages %}
+    {% for message in messages %}
+    <p style="color: rgb(220, 0, 0); "><b>{{ message }}</b></p>
+    {% endfor %}
+    {% endif %}
+{% endwith %}
+{% if answered %}
+    {% if correct %}
+    <p style="color: rgb(0, 200, 0);">Correct!</p>
+    {% else %}
+    <p style="color: rgb(200, 0, 0);">Incorrect :(</p>
+    {% endif %}
+{% endif %}
+<p>{{ numberRemaining }} questions remaining</p>
+<form action="" method="post">
+    <p>What is <b>{{ question }}</b>?</p>
+    <input type="text" name="result" />
+    <input type="submit" />
+</form>
 
-        <br />
+<br />
 
-        <a href="/quiz/restart">Restart</a>
-
-        <br />
-        <a href="/">Home</a>
-        <a href="/leaderboard">Leaderboard</a>
-    </body>
-</html>
+<a href="/quiz/restart">Restart</a>
+{% endblock %}
