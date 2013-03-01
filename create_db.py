@@ -37,7 +37,7 @@ try:
                 'correct BOOLEAN,'
                 'submit_time TIMESTAMP DEFAULT NOW()'
                 ')') #user given answer, not necessarily correct
-    c.execute('CREATE INDEX streak ON quiz_submissions (user_id, submit_time) WHERE correct IS TRUE')
+    c.execute('CREATE INDEX streak ON quiz_submissions (user_id, submit_time)')
 
     c.execute('CREATE TABLE app_settings ('
                 'key VARCHAR, '
