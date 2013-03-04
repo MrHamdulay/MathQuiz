@@ -129,3 +129,16 @@ def username_exists(username):
 
 def fetch_user_rank(user_id):
     c = g.database.cursor()
+    c.execute('WITH ranks AS (SELECT id, rank() OVER (ORDER BY score DESC) as rank FROM users) SELECT rank FROM ranks WHERE id = %s', (user_id, ))
+    rank = c.fetchone()[0]
+    c.close()
+
+    return rank
+
+def fetch_number_users():
+    c = g.database.cursor()
+    c.execute('SELECT count(id) FROM users')
+    count = c.fetchone()[0]
+    c.close()
+
+    return count

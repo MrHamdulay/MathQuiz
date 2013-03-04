@@ -33,6 +33,8 @@ def index():
     return render_template('index.html',
             username=session['username'],
             difficulty='Easy',
+            rank=database.fetch_user_rank(session['userId']),
+            total_users=database.fetch_number_users()
         )
 
 
