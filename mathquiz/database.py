@@ -71,6 +71,14 @@ def quiz_answer(user_id, quiz_id, question, answer, correct, score):
 
     g.database.commit()
 
+def cumulative_quiz_score(quiz_id):
+    c = g.database.cursor()
+    c.execute('SELECT sum(score) as total_score FROM quiz_submissions WHERE quiz_id = %s', (quiz_id, ))
+    score = c.fetchone()[0]
+    c.close()
+
+    return score
+
 def create_quiz(type):
     c = g.database.cursor()
     c.execute('INSERT INTO quiz (type, start_time, end_time, answered_by_userid) VALUES (%s, NOW(), NULL, %s)', (type, session['userId']))
@@ -84,9 +92,8 @@ def create_quiz(type):
     return quiz_id
 
 def quiz_complete(quiz_id, num_correct, num_questions):
+    score = cumulative_quiz_score(quiz_id)
     c = g.database.cursor()
-    c.execute('SELECT sum(score) as total_score FROM quiz_submissions WHERE quiz_id = %s', (quiz_id, ))
-    score = c.fetchone()[0]
     c.execute('UPDATE quiz SET end_time = NOW(), num_correct = %s, num_questions = %s, score =  %s WHERE id = %s', (num_correct, num_questions, score, quiz_id))
     c.execute('UPDATE users SET score = score + %s WHERE id = %s', (score, session['userId']))
     c.close()
@@ -118,6 +125,15 @@ def leaderboard(page):
     c.close()
 
     return result
+
+def leaderboard_size():
+    c = g.database.cursor()
+
+    c.execute('SELECT count(*) FROM users WHERE score > 0')
+    size = c.fetchone()[0]
+    c.close()
+
+    return size
 
 def username_exists(username):
     c = g.database.cursor()

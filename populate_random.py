@@ -7,8 +7,10 @@ db = psycopg2.connect('user=%s' % mathquiz.config.database_user)
 
 try:
     c = db.cursor()
-    for i in range(100, 200):
-        c.execute('insert into users (username, mxit_userid, score) values (%s, %s, %s)', ('abc%d'%i, i*2+40, randint(5, 200)))
+    for i in xrange(0, 100):
+        if i % 1000 == 0:
+            print i
+        c.execute('insert into users (username, mxit_userid, score) values (%s, %s, %s)', ('abc%d'%i, i*2+40, (i) % 37))
     c.close()
 finally:
     db.commit()

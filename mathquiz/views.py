@@ -70,14 +70,15 @@ def quiz(typee, difficulty):
             userAnswer = int(request.form['result'])
             userAnswerCorrect = previousAnswer == userAnswer
 
-            score = 5 if userAnswerCorrect else 0
+            score = 5 if userAnswerCorrect else -3
 
             # calculate streak bonus
             streakLength = database.calculate_streak_length(session['userId'], session['quizId'])
             streakScore = 0 if streakLength < 5 else 5 + streakLength
             score += streakScore
             if streakScore != 0:
-                scoring = 'Streak of %d. %d bonus points!' % (streakLength, streakScore)
+                scoring = 'Streak of %d. %d bonus points! <br />' % (streakLength, streakScore)
+            scoring += 'Score so far: %d points!' % score
 
             database.quiz_answer(session['userId'], session['quizId'], previousAnswer, userAnswer, userAnswerCorrect, score)
             if userAnswerCorrect:
@@ -125,4 +126,6 @@ def quiz(typee, difficulty):
 @app.route('/leaderboard', defaults={'page': 0})
 @app.route('/leaderboard/<int:page>')
 def leaderboard(page):
-    return render_template('leaderboard.html', leaderboard=database.leaderboard(page))
+    if page < 0:
+        page = 0
+    return render_template('leaderboard.html', page=page, totalPages=database.leaderboard_size(), leaderboard=database.leaderboard(page))

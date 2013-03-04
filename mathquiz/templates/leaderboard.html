@@ -4,12 +4,14 @@
         <p><b>Leaderboard</b></p>
         <p>
         {% for user in leaderboard %}
-        <b> {{ loop.index }}) </b> {{ user[0] }} ({{ user[1]}}) <br />
+        <b> {{ loop.index  + page*10 }}) </b> {{ user[0] }} ({{ user[1] }}) <br />
         {% else %}
         Leaderboard is empty. Meh.
         {% endfor %}
         </p>
         <p>
+            <a href="/leaderboard/{{ page + 1}}">Next</a>
+            <a href="/leaderboard/{{ page - 1}}">Previous</a>
             <a href="/">Home</a>
         </p>
     </body>
