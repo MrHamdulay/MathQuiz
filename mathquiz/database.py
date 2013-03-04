@@ -100,6 +100,8 @@ def quiz_complete(quiz_id, num_correct, num_questions):
 
     g.database.commit()
 
+    return score
+
 def calculate_streak_length(user_id, cur_quiz_id):
     c = g.database.cursor()
     c.execute('SELECT correct, quiz_id FROM quiz_submissions WHERE user_id = %s ORDER BY submit_time DESC LIMIT 10', (user_id, ))

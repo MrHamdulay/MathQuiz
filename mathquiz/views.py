@@ -59,7 +59,6 @@ def quiz(typee, difficulty):
     if 'quizId' not in session or session['quizId'] == -1:
         quizId = session['quizId'] = database.create_quiz(type)
         startTime = session['startTime'] = time()
-        questionsRemaining = session['questionsRemaining'] = 15
         correctlyAnswered = session['correctlyAnswered'] = 0
         incorrectlyAnswered = session['incorrectlyAnswered'] = 0
 
@@ -90,7 +89,9 @@ def quiz(typee, difficulty):
 
     # number of questions remaining in quiz
     # if we still have to ask questions of the user
-    if questionsRemaining - 1 != 0:
+    timeRemaining = 30 - (time() - startTime)
+
+    if timeRemaining >= 0:
         q = question.generateQuestion(type, difficulty)
         session['previousQuestionAnswer'] = q.answer
 
@@ -98,6 +99,7 @@ def quiz(typee, difficulty):
             numberRemaining=questionsRemaining,
             question=str(q),
             scoring=scoring,
+            timeRemaining=round(timeRemaining, 1),
             answered = userAnswer is not None, #has the user answered this question
             correct=userAnswerCorrect))
 
@@ -106,14 +108,14 @@ def quiz(typee, difficulty):
             questionsRemaining -= 1
     else:
         # calculate score
-        database.quiz_complete(session['quizId'], correctlyAnswered, correctlyAnswered+incorrectlyAnswered)
+        score = database.quiz_complete(session['quizId'], correctlyAnswered, correctlyAnswered+incorrectlyAnswered)
+        session['quizId'] = -1
         response = make_response(render_template('quizComplete.html',
             correct=userAnswerCorrect,
             numberCorrect=correctlyAnswered,
-            total=correctlyAnswered+incorrectlyAnswered,
-            time=round(time()-startTime, 1)))
+            score=score,
+            total=correctlyAnswered+incorrectlyAnswered))
 
-        session['quizId'] = -1
 
 
     # persist changes to session
