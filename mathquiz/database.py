@@ -124,7 +124,7 @@ def leaderboard(page):
     print result
     c.close()
 
-    return result
+    return [] if result[0][0] is None else result
 
 def leaderboard_size():
     c = g.database.cursor()

@@ -128,4 +128,9 @@ def quiz(typee, difficulty):
 def leaderboard(page):
     if page < 0:
         page = 0
-    return render_template('leaderboard.html', page=page, totalPages=database.leaderboard_size(), leaderboard=database.leaderboard(page))
+    leaderboard=database.leaderboard(page)
+
+    leaderboardSize = database.leaderboard_size()
+    leaderboardPages = leaderboardSize / 10
+
+    return render_template('leaderboard.html', page=page, lastPage=(page==leaderboardPages), leaderboard=leaderboard)

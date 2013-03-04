@@ -10,8 +10,12 @@
         {% endfor %}
         </p>
         <p>
+        {% if not lastPage %}
             <a href="/leaderboard/{{ page + 1}}">Next</a>
+        {% endif %}
+        {% if page != 0 %}
             <a href="/leaderboard/{{ page - 1}}">Previous</a>
+        {% endif %}
             <a href="/">Home</a>
         </p>
     </body>
