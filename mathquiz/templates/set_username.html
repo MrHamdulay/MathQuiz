@@ -1,10 +1,12 @@
 <html>
     <body>
+        <p>Welcome to the MathQuiz. Here we will test your abilities in typing speed 
+        and mental agility. Compete to be the best against other Quizzers worldwide.</p>
         {% if username_exists %}
         Username {{ username_exists }} exists please choose another <br />
         {% endif %}
         <form action="/user/set_username" method="post">
-            Please select a username: 
+            Select a username to begin your epic journey:
             <input type="text" name="username" />
             <input type="submit" />
         </form>

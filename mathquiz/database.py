@@ -99,7 +99,6 @@ def calculate_streak_length(user_id, cur_quiz_id):
 
     streakLength = 0
     for correct, quiz_id in c:
-        print correct, quiz_id
         # streak began or we moved over to the previous quiz
         if not correct or quiz_id != cur_quiz_id:
             break
