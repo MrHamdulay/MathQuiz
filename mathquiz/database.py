@@ -8,7 +8,7 @@ from mathquiz.question import Question
 
 @app.before_request
 def create_database():
-    g.database = psycopg2.connect('user=%s' % config.database_user)
+    g.database = psycopg2.connect('user=%s password=%s' % (config.database_user, config.database_password))
 
     # ensure schema versions are equal
     c = g.database.cursor()
@@ -151,7 +151,7 @@ def fetch_user_rank(user_id):
     rank = c.fetchone()[0]
     c.close()
 
-    return rank
+    return int(rank)
 
 def fetch_number_users():
     c = g.database.cursor()
