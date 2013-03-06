@@ -14,7 +14,7 @@ try:
                 'joined_date timestamp DEFAULT NOW(),'
                 'score integer DEFAULT 0'
                 ')')
-    c.execute('CREATE INDEX ON users (score)')
+    c.execute('CREATE INDEX score ON users (score)')
 
     c.execute('CREATE TABLE quiz ('
                 'id SERIAL,'
