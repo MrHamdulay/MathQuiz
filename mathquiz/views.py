@@ -45,7 +45,6 @@ def quiz(typee, difficulty):
     type = question.Types[typee.upper()]
 
     try:
-        questionsRemaining = int(session['questionsRemaining'])
         correctlyAnswered = int(session['correctlyAnswered'])
         incorrectlyAnswered = int(session['incorrectlyAnswered'])
         startTime = float(session['startTime'])
@@ -54,7 +53,7 @@ def quiz(typee, difficulty):
         session['quizId'] = -1
 
     previousAnswer, userAnswer, userAnswerCorrect = None, None, None
-    scoring = ''
+    scoring = []
 
     if 'quizId' not in session or session['quizId'] == -1:
         quizId = session['quizId'] = database.create_quiz(type)
@@ -76,8 +75,8 @@ def quiz(typee, difficulty):
             streakScore = 0 if streakLength < 5 else 5 + streakLength
             score += streakScore
             if streakScore != 0:
-                scoring = 'Streak of %d. %d bonus points! <br />' % (streakLength, streakScore)
-            scoring += 'Score so far: %d points!' % score
+                scoring.append('Streak of %d. %d bonus points!' % (streakLength, streakScore))
+            scoring.append('Score so far: %d points!' % score)
 
             database.quiz_answer(session['userId'], session['quizId'], previousAnswer, userAnswer, userAnswerCorrect, score)
             if userAnswerCorrect:
@@ -96,30 +95,27 @@ def quiz(typee, difficulty):
         session['previousQuestionAnswer'] = q.answer
 
         response = make_response(render_template('quiz.html',
-            numberRemaining=questionsRemaining,
             question=str(q),
             scoring=scoring,
             timeRemaining=round(timeRemaining, 1),
             answered = userAnswer is not None, #has the user answered this question
             correct=userAnswerCorrect))
-
-        # decrease remaining questions counter if the user answered the question
-        if userAnswer is not None:
-            questionsRemaining -= 1
     else:
         # calculate score
+        oldLeaderboardPosition = database.fetch_user_rank(session['userId'])
         score = database.quiz_complete(session['quizId'], correctlyAnswered, correctlyAnswered+incorrectlyAnswered)
+        newLeaderboardPosition = database.fetch_user_rank(session['userId'])
         session['quizId'] = -1
         response = make_response(render_template('quizComplete.html',
             correct=userAnswerCorrect,
             numberCorrect=correctlyAnswered,
             score=score,
+            leaderboardJump=newLeaderboardPosition-oldLeaderboardPosition,
             total=correctlyAnswered+incorrectlyAnswered))
 
 
 
     # persist changes to session
-    session['questionsRemaining'] = questionsRemaining
     session['correctlyAnswered'] = correctlyAnswered
     session['incorrectlyAnswered'] = incorrectlyAnswered
 

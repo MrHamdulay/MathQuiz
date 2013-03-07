@@ -9,6 +9,9 @@
         Time's up!
         You got {{ numberCorrect }} correct out of {{ total }}.<br />
         Final score: {{ score }} ! <br />
+        {% if leaderboardJump > 0 %}
+        You jumped up the leaderboard by {{ leaderboardJump }} positions!
+        {% endif %}
         <a href="/">Home</a>
     </body>
 </html>

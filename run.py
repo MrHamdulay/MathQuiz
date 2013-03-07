@@ -13,4 +13,3 @@ else:
     http_server = HTTPServer(WSGIContainer(app))
     http_server.listen(config.port)
     IOLoop.instance().start()
-    print 'started'

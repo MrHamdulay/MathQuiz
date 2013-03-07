@@ -13,7 +13,9 @@
     {% else %}
     <p style="color: rgb(200, 0, 0);">Incorrect :(</p>
     {% endif %}
-    <p>{{ scoring }}</p>
+    {% for score in scoring %} 
+    <p>{{ score }}</p>
+    {% endfor %}
 <br />
 {% endif %}
 <p>{{ timeRemaining }} seconds remaining.</p>

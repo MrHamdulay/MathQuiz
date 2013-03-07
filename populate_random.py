@@ -10,7 +10,7 @@ try:
     for i in xrange(0, 100):
         if i % 1000 == 0:
             print i
-        c.execute('insert into users (username, mxit_userid, score) values (%s, %s, %s)', ('abc%d'%i, i*2+40, (i) % 37))
+        c.execute('insert into users (username, mxit_userid, score) values (%s, %s, %s)', ('abc%d'%i, i*2+40, (i) % 1001))
     c.close()
 finally:
     db.commit()
