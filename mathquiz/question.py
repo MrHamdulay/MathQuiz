@@ -20,7 +20,7 @@ class Question:
         return '%d %s %d' % (self.first, self.operation, self.second)
 
 Difficulties = Enum(('EASY', 'MEDIUM', 'HARD'))
-Types = Enum(('ADDSUB', 'MULTDIV'))
+Types = Enum(('ADDSUB', 'MULTDIV', 'ALL'))
 
 def generateAddSub(difficulty):
     operations = '+-'

@@ -27,7 +27,6 @@ try:
                 'end_time timestamp)')
     c.execute('CREATE INDEX complete_time ON quiz ((end_time - start_time))')
 
-
     c.execute('CREATE TABLE quiz_submissions ('
                 'id SERIAL,'
                 'user_id INTEGER,'

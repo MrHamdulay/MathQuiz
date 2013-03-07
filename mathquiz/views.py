@@ -43,6 +43,12 @@ def quiz(typee, difficulty):
     #convert string types to internal enums
     difficulty = question.Difficulties[difficulty.upper()]
     type = question.Types[typee.upper()]
+    if type == question.Types.ALL:
+        type = random.choice(list(question.Types))
+        # looks ugly but we don't want to accidently get ourselves into a
+        # semi infinite loop where we always choose Type.ALL do we?
+        if type == question.Types.ALL:
+            type = question.Types.ADDSUB
 
     try:
         correctlyAnswered = int(session['correctlyAnswered'])
