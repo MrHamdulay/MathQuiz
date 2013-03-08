@@ -45,8 +45,9 @@ def generateAddSub(difficulty):
     # negative numbers is hard, we can't deal
     print (first, operation, second)
     print 'answer', Question(first, operation, second).answer
-    if allowNegative and Question(first, operation, second).answer < 0:
+    if not allowNegative and Question(first, operation, second).answer < 0:
         second, first = first, second
+        assert(Question(first, operation, second).answer >= 0)
 
     return Question(first, operation, second)
 
@@ -67,7 +68,7 @@ def generateMultDiv(difficulty):
             result = random.randint(-12, 12)
             second = random.randint(-20, 20)
             if second == 0:
-                second = -1
+                second = 1
 
         first = result*second
     elif operation == 'x':
