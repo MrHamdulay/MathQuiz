@@ -10,6 +10,7 @@ try:
     c.execute('CREATE TABLE users ('
                 'id SERIAL,'
                 'username VARCHAR UNIQUE,'
+                'difficulty INTEGER DEFAULT 0,'
                 'mxit_userid varchar(100) UNIQUE,'
                 'joined_date timestamp DEFAULT NOW(),'
                 'score integer DEFAULT 0'

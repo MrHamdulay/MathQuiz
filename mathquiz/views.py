@@ -100,6 +100,9 @@ def quiz(typee, difficulty):
         q = question.generateQuestion(type, difficulty)
         session['previousQuestionAnswer'] = q.answer
 
+        # if user answered > 80% of answers correctly and answered > 10 correctly increase difficulty level
+        if
+
         response = make_response(render_template('quiz.html',
             question=str(q),
             scoring=scoring,

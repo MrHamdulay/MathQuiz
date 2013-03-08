@@ -41,6 +41,7 @@ def create_user():
         c.execute('INSERT INTO users (mxit_userid, joined_date) VALUES (%s, NOW())', (mxit_user_id, ))
         c.execute('SELECT lastval()')
         session['userId'] = c.fetchone()[0]
+        session['difficulty'] = 'easy'
         g.database.commit()
     except psycopg2.IntegrityError:
         g.database.rollback()
@@ -48,8 +49,9 @@ def create_user():
         if 'userId' not in session:
             try:
                 c2 = g.database.cursor()
-                c2.execute('SELECT id, username FROM users WHERE mxit_userid = %s LIMIT 1', (str(mxit_user_id), ))
-                session['userId'], session['username'] = c2.fetchone()
+                c2.execute('SELECT id, username, difficulty FROM users WHERE mxit_userid = %s LIMIT 1', (str(mxit_user_id), ))
+                session['userId'], session['username'], session['difficulty'] = c2.fetchone()
+                session['difficulty'] = question.Difficulty[session['difficulty']]
             finally:
                 c2.close()
     finally:
