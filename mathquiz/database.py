@@ -2,8 +2,7 @@ import psycopg2
 
 from flask import g, request, session
 
-
-from mathquiz import app, config, SCHEMA_VERSION
+from mathquiz import app, config, SCHEMA_VERSION, question
 from mathquiz.question import Question
 
 @app.before_request
@@ -168,3 +167,10 @@ def set_user_difficulty(user_id, difficulty):
     c.execute('UPDATE users SET difficulty = %s WHERE id = %s', (difficulty, user_id))
     c.close()
     g.database.commit()
+
+def fetch_user_difficulty(user_id):
+    c = g.database.cursor()
+    c.execute('SELECT difficulty FROM users WHERE id = %s', (user_id, ))
+    difficulty = question.Difficulties[c.fetchone()[0]]
+    c.close()
+    return difficulty

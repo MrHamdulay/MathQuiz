@@ -43,7 +43,8 @@ def index():
 
     return render_template('index.html',
             username=session['username'],
-            difficulty=session['difficulty'],
+            current_difficulty=session['difficulty'].title(),
+            actual_difficulty=database.fetch_user_difficulty(session['userId']).title(),
             rank=database.fetch_user_rank(session['userId']),
             total_users=database.fetch_number_users()
         )
@@ -133,7 +134,7 @@ def quiz(typee):
             # don't go over max difficulty (hard)
             if newDifficulty < len(question.Difficulties):
                 database.set_user_difficulty(session['userId'], newDifficulty)
-                newDifficulty = question.Difficulties[newDifficulty]
+                newDifficulty = question.Difficulties[newDifficulty].lower()
 
         response = make_response(render_template('quizComplete.html',
             correct=userAnswerCorrect,
