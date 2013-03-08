@@ -10,15 +10,15 @@
             {% endif %}
         {% endwith %}
         <p>Welcome <i>{{ username }}</i> ({{ rank }} / {{ total_users }})</p>
-        <p>Level: {{ difficulty }} (do the I'm feeling ready test to level up)</p>
         <p>
             Quiz<br />
-            <a href="/quiz/addsub/easy">Addition and Subtraction</a><br />
-            <a href="/quiz/multdiv/easy">Multiplication and Division</a><br />
-            <a href="/quiz/all/easy">I'm feeling ready</a><br />
+            <a href="/quiz/addsub">Addition and Subtraction</a><br />
+            <a href="/quiz/multdiv">Multiplication and Division</a><br />
+            <a href="/quiz/all">I'm feeling badass</a><br />
         </p>
         <p>
             <a href="/leaderboard">Leaderboard</a><br />
         </p>
+        <p>Level: {{ difficulty }} (answer more than 10 questions on "I'm feeling badass" with 80% correct to level up!)</p>
     </body>
 </html>

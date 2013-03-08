@@ -9,6 +9,17 @@ import config
 import question
 import database
 
+@app.route('/set_difficulty')
+@app.route('/set_difficulty/<difficulty>')
+def set_difficulty(difficulty=None):
+    if difficulty is None:
+        return render_template('change_difficulty')
+
+    if difficulty.upper() in question.Difficulties:
+        session['difficulty'] = difficulty.upper()
+    else:
+        return 'unknown difficulty'
+
 @app.route('/user/set_username', methods=('get', 'post'))
 def set_username():
     if 'username' in request.form:
@@ -32,16 +43,16 @@ def index():
 
     return render_template('index.html',
             username=session['username'],
-            difficulty='Easy',
+            difficulty=session['difficulty'],
             rank=database.fetch_user_rank(session['userId']),
             total_users=database.fetch_number_users()
         )
 
 
-@app.route('/quiz/<typee>/<difficulty>', methods=('get', 'post'))
-def quiz(typee, difficulty):
+@app.route('/quiz/<typee>', methods=('get', 'post'))
+def quiz(typee):
     #convert string types to internal enums
-    difficulty = question.Difficulties[difficulty.upper()]
+    difficulty = question.Difficulties[session['difficulty'].upper()]
     type = question.Types[typee.upper()]
     if type == question.Types.ALL:
         type = random.choice(list(question.Types))
@@ -100,9 +111,6 @@ def quiz(typee, difficulty):
         q = question.generateQuestion(type, difficulty)
         session['previousQuestionAnswer'] = q.answer
 
-        # if user answered > 80% of answers correctly and answered > 10 correctly increase difficulty level
-        if
-
         response = make_response(render_template('quiz.html',
             question=str(q),
             scoring=scoring,
@@ -111,13 +119,26 @@ def quiz(typee, difficulty):
             correct=userAnswerCorrect))
     else:
         # calculate score
+        numberAnswered = correctlyAnswered+incorrectlyAnswered
         oldLeaderboardPosition = database.fetch_user_rank(session['userId'])
-        score = database.quiz_complete(session['quizId'], correctlyAnswered, correctlyAnswered+incorrectlyAnswered)
+        score = database.quiz_complete(session['quizId'], correctlyAnswered, numberAnswered)
         newLeaderboardPosition = database.fetch_user_rank(session['userId'])
         session['quizId'] = -1
+
+        newDifficulty = False
+        # if user answered > 80% of answers correctly and answered > 10 correctly increase difficulty level
+        print 'percent correct', (correctlyAnswered / numberAnswered)
+        if numberAnswered >= 8 and (float(correctlyAnswered) / numberAnswered) > 0.8:
+            newDifficulty = question.Difficulties.index(session['difficulty'].upper())+1
+            # don't go over max difficulty (hard)
+            if newDifficulty < len(question.Difficulties):
+                database.set_user_difficulty(session['userId'], newDifficulty)
+                newDifficulty = question.Difficulties[newDifficulty]
+
         response = make_response(render_template('quizComplete.html',
             correct=userAnswerCorrect,
             numberCorrect=correctlyAnswered,
+            newDifficulty=newDifficulty,
             score=score,
             leaderboardJump=newLeaderboardPosition-oldLeaderboardPosition,
             total=correctlyAnswered+incorrectlyAnswered))

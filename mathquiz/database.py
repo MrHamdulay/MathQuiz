@@ -162,3 +162,9 @@ def fetch_number_users():
     c.close()
 
     return count
+
+def set_user_difficulty(user_id, difficulty):
+    c = g.database.cursor()
+    c.execute('UPDATE users SET difficulty = %s WHERE id = %s', (difficulty, user_id))
+    c.close()
+    g.database.commit()

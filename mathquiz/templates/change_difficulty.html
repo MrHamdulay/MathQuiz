@@ -1,0 +1,13 @@
+{% extends "template.html" %>
+{% block body %}
+Select a difficulty:
+{% if easy %}
+<a href="/set_difficulty/easy">Easy</a>
+{% endif %}
+{% if medium %}
+<a href="/set_difficulty/medium">Medium</a>
+{% endif %}
+{% if hard %}
+<a href="/set_difficulty/hard">Hard</a>
+{% endif %}
+{% endblock %}
