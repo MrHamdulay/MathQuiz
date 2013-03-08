@@ -28,20 +28,25 @@ def generateAddSub(difficulty):
     operations = '+-'
     operation = random.choice(operations)
 
+    allowNegative = False
+
     if difficulty == Difficulties.EASY:
         first = random.randint(1, 15)
         second = random.randint(1, 15)
 
-        # negative numbers is hard, we can't deal
-        if Question(first, operation, second).answer < 0:
-            second, first = first, second
-
     elif difficulty == Difficulties.MEDIUM:
         first = random.randint(11, 50)
-        second = random.randint(11, 60-first)
+        second = random.randint(min(11, 60-first), max(11, 60-first))
     elif difficulty == Difficulties.HARD:
         first = random.randint(11, 80)
-        second = random.randint(11, 100-first)
+        second = random.randint(min(11, 100-first), max(11, 100-first))
+        allowNegative = True
+
+    # negative numbers is hard, we can't deal
+    print (first, operation, second)
+    print 'answer', Question(first, operation, second).answer
+    if allowNegative and Question(first, operation, second).answer < 0:
+        second, first = first, second
 
     return Question(first, operation, second)
 
