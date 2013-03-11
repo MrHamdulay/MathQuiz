@@ -35,6 +35,7 @@ def load_user(mxit_user_id):
         c.execute('SELECT id, username, difficulty FROM users WHERE mxit_userid = %s LIMIT 1', (str(mxit_user_id), ))
         session['userId'], session['username'], session['difficulty'] = c.fetchone()
         session['difficulty'] = question.Difficulties[session['difficulty']]
+        session['version'] = SCHEMA_VERSION
     finally:
         c.close()
 
@@ -56,7 +57,8 @@ def create_user():
     except psycopg2.IntegrityError:
         g.database.rollback()
         # this isn't an error. We just don't check whether we've added this user before
-        load_user(mxit_user_id)
+        if 'userId' not in session or ('version' in session and session['version'] != SCHEMA_VERSION):
+            load_user(mxit_user_id)
     finally:
         c.close()
 
