@@ -29,11 +29,20 @@ def close_database(request):
     g.database.close()
     return request
 
+def load_user():
+    try:
+        c = g.database.cursor()
+        c.execute('SELECT id, username, difficulty FROM users WHERE mxit_userid = %s LIMIT 1', (str(mxit_user_id), ))
+        session['userId'], session['username'], session['difficulty'] = c.fetchone()
+        session['difficulty'] = question.Difficulties[session['difficulty']]
+    finally:
+        c.close()
+
 def create_user():
     try:
         mxit_user_id = request.headers['HTTP_X_MXIT_USERID_R']
+        print mxit_user_id
     except KeyError:
-        print request.remote_addr
         mxit_user_id = -1 # development id
     c = g.database.cursor()
     try:
@@ -45,18 +54,19 @@ def create_user():
     except psycopg2.IntegrityError:
         g.database.rollback()
         # this isn't an error. We just don't check whether we've added this user before
-        if 'userId' not in session:
-            try:
-                c2 = g.database.cursor()
-                c2.execute('SELECT id, username, difficulty FROM users WHERE mxit_userid = %s LIMIT 1', (str(mxit_user_id), ))
-                session['userId'], session['username'], session['difficulty'] = c2.fetchone()
-                session['difficulty'] = question.Difficulty[session['difficulty']]
-            finally:
-                c2.close()
+        load_user()
     finally:
         c.close()
 
     g.database.commit()
+
+def fetch_user_score(user_id):
+    c = g.database.cursor()
+    c.execute('SELECT score FROM users WHERE id = %s', (user_id, ))
+    score = c.fetchone()[0]
+    c.close()
+
+    return score
 
 def set_username(username):
     c = g.database.cursor()
@@ -96,7 +106,7 @@ def quiz_complete(quiz_id, num_correct, num_questions):
     score = cumulative_quiz_score(quiz_id)
     c = g.database.cursor()
     c.execute('UPDATE quiz SET end_time = NOW(), num_correct = %s, num_questions = %s, score =  %s WHERE id = %s', (num_correct, num_questions, score, quiz_id))
-    c.execute('UPDATE users SET score = score + %s WHERE id = %s', (score, session['userId']))
+    c.execute('UPDATE users SET score = GREATEST(score, %s) WHERE id = %s', (score, session['userId']))
     c.close()
 
     g.database.commit()
@@ -171,6 +181,7 @@ def set_user_difficulty(user_id, difficulty):
 def fetch_user_difficulty(user_id):
     c = g.database.cursor()
     c.execute('SELECT difficulty FROM users WHERE id = %s', (user_id, ))
-    difficulty = question.Difficulties[c.fetchone()[0]]
+    row = c.fetchone()
+    difficulty = question.Difficulties[row[0]]
     c.close()
     return difficulty
