@@ -29,7 +29,7 @@ def close_database(request):
     g.database.close()
     return request
 
-def load_user():
+def load_user(mxit_user_id):
     try:
         c = g.database.cursor()
         c.execute('SELECT id, username, difficulty FROM users WHERE mxit_userid = %s LIMIT 1', (str(mxit_user_id), ))
@@ -54,7 +54,7 @@ def create_user():
     except psycopg2.IntegrityError:
         g.database.rollback()
         # this isn't an error. We just don't check whether we've added this user before
-        load_user()
+        load_user(mxit_user_id)
     finally:
         c.close()
 
