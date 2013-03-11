@@ -48,7 +48,7 @@ def create_user():
         mxit_nick = 'Yasen'
     c = g.database.cursor()
     try:
-        c.execute('INSERT INTO users (mxit_userid, username, joined_date) VALUES (%s, NOW())', (mxit_user_id, mxit_nick))
+        c.execute('INSERT INTO users (mxit_userid, username, joined_date) VALUES (%s, %s, NOW())', (mxit_user_id, mxit_nick))
         c.execute('SELECT lastval()')
         session['userId'] = c.fetchone()[0]
         session['difficulty'] = 'easy'
