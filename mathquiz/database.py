@@ -39,14 +39,16 @@ def load_user(mxit_user_id):
         c.close()
 
 def create_user():
+    print request.headers
     try:
-        mxit_user_id = request.headers['HTTP_X_MXIT_USERID_R']
-        print mxit_user_id
+        mxit_user_id = request.headers['X-Mxit-Userid-R']
+        mxit_nick = request.headers['X-Mxit-Nick']
     except KeyError:
         mxit_user_id = -1 # development id
+        mxit_nick = 'Yasen'
     c = g.database.cursor()
     try:
-        c.execute('INSERT INTO users (mxit_userid, joined_date) VALUES (%s, NOW())', (mxit_user_id, ))
+        c.execute('INSERT INTO users (mxit_userid, username, joined_date) VALUES (%s, NOW())', (mxit_user_id, mxit_nick))
         c.execute('SELECT lastval()')
         session['userId'] = c.fetchone()[0]
         session['difficulty'] = 'easy'
@@ -67,13 +69,6 @@ def fetch_user_score(user_id):
     c.close()
 
     return score
-
-def set_username(username):
-    c = g.database.cursor()
-    c.execute('UPDATE users SET username = %s WHERE id = %s', (username, session['userId']))
-    c.close()
-
-    g.database.commit()
 
 def quiz_answer(user_id, quiz_id, question, answer, correct, score):
     c = g.database.cursor()
