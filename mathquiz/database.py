@@ -29,7 +29,7 @@ def close_database(request):
     g.database.close()
     return request
 
-def load_user(mxit_user_id):
+def set_user(mxit_user_id):
     try:
         c = g.database.cursor()
         c.execute('SELECT id, username, difficulty FROM users WHERE mxit_userid = %s LIMIT 1', (str(mxit_user_id), ))
@@ -53,12 +53,13 @@ def create_user():
         c.execute('SELECT lastval()')
         session['userId'] = c.fetchone()[0]
         session['difficulty'] = 'easy'
+        session['username'] = mxit_nick
         g.database.commit()
     except psycopg2.IntegrityError:
         g.database.rollback()
         # this isn't an error. We just don't check whether we've added this user before
         if 'userId' not in session or ('version' in session and session['version'] != SCHEMA_VERSION):
-            load_user(mxit_user_id)
+            set_user(mxit_user_id)
     finally:
         c.close()
 
