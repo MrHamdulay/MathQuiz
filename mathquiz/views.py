@@ -48,6 +48,7 @@ def quiz(typee):
         if type == question.Types.ALL:
             type = question.Types.ADDSUB
 
+    startTime = time()
     try:
         correctlyAnswered = int(session['correctlyAnswered'])
         incorrectlyAnswered = int(session['incorrectlyAnswered'])
@@ -59,13 +60,19 @@ def quiz(typee):
     previousAnswer, userAnswer, userAnswerCorrect = None, None, None
     scoring = []
 
+
+    # number of questions remaining in quiz
+    # if we still have to ask questions of the user
+    timeRemaining = 30 - (time() - startTime)
+
     if 'quizId' not in session or session['quizId'] == -1:
         quizId = session['quizId'] = database.create_quiz(type)
         startTime = session['startTime'] = time()
+        timeRemaining = 30
         correctlyAnswered = session['correctlyAnswered'] = 0
         incorrectlyAnswered = session['incorrectlyAnswered'] = 0
 
-    else:
+    elif timeRemaining >= 0:
         # if we have already started the quiz
         try:
             previousAnswer = session['previousQuestionAnswer']
@@ -90,10 +97,6 @@ def quiz(typee):
                incorrectlyAnswered += 1
         except (ValueError, KeyError):
             flash('Please enter a number as an answer')
-
-    # number of questions remaining in quiz
-    # if we still have to ask questions of the user
-    timeRemaining = 30 - (time() - startTime)
 
     if timeRemaining >= 0:
         q = question.generateQuestion(type, difficulty)
@@ -138,7 +141,6 @@ def quiz(typee):
             score=score,
             leaderboardJump=leaderboardJump,
             total=correctlyAnswered+incorrectlyAnswered))
-
 
 
     # persist changes to session
