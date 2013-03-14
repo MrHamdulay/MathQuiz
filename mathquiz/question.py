@@ -24,6 +24,15 @@ class Question:
 Difficulties = Enum(('EASY', 'MEDIUM', 'HARD'))
 Types = Enum(('ADDSUB', 'MULTDIV', 'ALL'))
 
+def score(difficulty, correct):
+    if not correct:
+        return -3
+    if difficulty == Difficulties.EASY:
+        return 5
+    elif difficulty == Difficulties.MEDIUM:
+        return 7
+    return 9
+
 def generateAddSub(difficulty):
     operations = '+-'
     operation = random.choice(operations)

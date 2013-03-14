@@ -72,7 +72,7 @@ def quiz(typee):
             userAnswer = int(request.form['result'])
             userAnswerCorrect = previousAnswer == userAnswer
 
-            score = 5 if userAnswerCorrect else -3
+            score = question.score(difficulty, userAnswerCorrect)
 
             # calculate streak bonus
             streakLength = database.calculate_streak_length(session['userId'], session['quizId'])
