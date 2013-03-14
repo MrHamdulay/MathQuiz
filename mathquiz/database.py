@@ -208,3 +208,10 @@ def fetch_user_difficulty(user_id):
     difficulty = question.Difficulties[row[0]]
     c.close()
     return difficulty
+
+def submit_feedback(user_id, feedback):
+    c = g.database.cursor()
+    c.execute('INSERT INTO feedback (username, userid, feedback) VALUES ((SELECT username FROM users WHERE id = %s), %s, %s)', (user_id, user_id, feedback))
+    c.close()
+
+    g.database.commit()

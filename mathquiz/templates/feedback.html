@@ -1,0 +1,8 @@
+{% extends "template.html" %}
+{% block body %}
+What do you think about The MathChallenge? Suggestions and Criticism Welcome.
+<form action="/feedback" method="post">
+    <textarea name="feedback"></textarea>
+    <input type="submit" />
+</form>
+{% endblock %}

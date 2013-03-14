@@ -11,7 +11,7 @@
         {% endwith %}
         <p>Welcome <i>{{ username }}</i> 
         {% if rank %} 
-        ({{ rank }} / {{ total_users }})
+        &nbsp;({{ rank }} / {{ total_users }})
         {% else %}
         (unranked)
         {% endif %}
@@ -23,6 +23,7 @@
             <a href="/quiz/all">I'm feeling badass</a><br />
         </p>
         <p>
+        <a href="/feedback">Feedback</a><br />
             <a href="/leaderboard">Leaderboard</a><br />
             {% if actual_difficulty != "Easy" %}
             <a href="/set_difficulty">Change quiz difficulty</a>

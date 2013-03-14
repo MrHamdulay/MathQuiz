@@ -9,6 +9,16 @@ import config
 import question
 import database
 
+@app.route('/feedback', methods=('post', 'get'))
+def feedback():
+    if 'feedback' in request.form:
+        feedback = request.form['feedback']
+        database.submit_feedback(session['userId'], feedback)
+        flash('Thank you for your feedback.')
+        return redirect('/')
+    else:
+        return render_template('feedback.html')
+
 @app.route('/set_difficulty')
 @app.route('/set_difficulty/<difficulty>')
 def set_difficulty(difficulty=None):

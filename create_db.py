@@ -48,6 +48,14 @@ try:
                 'key VARCHAR, '
                 'value VARCHAR)')
     c.execute("INSERT INTO app_settings (key, value) VALUES ('schema_version', '%s')", (SCHEMA_VERSION, ))
+
+    c.execute('CREATE TABLE feedback (username VARCHAR,'
+                    'userid INTEGER,'
+                    'feedback TEXT, '
+                    'submitted_date TIMESTAMP DEFAULT NOW()'
+                    ')')
+
+
     db.commit()
 except psycopg2.ProgrammingError, e:
     print 'You have already created databases. To update schema first clear databsae. We dont upgrade '
