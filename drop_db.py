@@ -1,6 +1,10 @@
 import psycopg2
 from mathquiz import config
+import sys
 
+print 'Are you sure this is what you want to do? Say YES to confirm'
+if raw_input() != 'YES':
+    sys.exit()
 db = psycopg2.connect('user=%s' % config.database_user)
 
 c = db.cursor()
@@ -13,3 +17,4 @@ c.execute('drop table if exists app_settings')
 
 c.close()
 db.commit()
+print 'Completed'
