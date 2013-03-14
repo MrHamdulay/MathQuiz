@@ -3,20 +3,26 @@
     <body>
         <p><b>Leaderboard</b></p>
         <p>
-        {% for user in leaderboard %}
-        <b> {{ loop.index  + page*10 }}) </b> {{ user[0] }} ({{ user[1] }}) <br />
-        {% else %}
-        Leaderboard is empty. Meh.
-        {% endfor %}
+            {% for user in leaderboard %}
+            <b> {{ loop.index  + page*10 }}) </b> {{ user[0] }} ({{ user[1] }}) <br />
+            {% else %}
+            Leaderboard is empty. Meh.
+            {% endfor %}
         </p>
         <p>
-        {% if not lastPage %}
-            <a href="/leaderboard/{{ page + 1}}">Next</a>
-        {% endif %}
-        {% if page != 0 %}
-            <a href="/leaderboard/{{ page - 1}}">Previous</a>
-        {% endif %}
-            <a href="/">Home</a>
+            {% if not lastPage %}
+            <a href="/leaderboard/{{difficulty}}/{{ page + 1}}">Next</a>
+            {% endif %}
+            {% if page != 0 %}
+            <a href="/leaderboard/{{difficulty}}/{{ page - 1}}">Previous</a>
+            {% endif %}
         </p>
+        <p>
+            <a href="/leaderboard/easy">Easy</a>
+            <a href="/leaderboard/medium">Medium</a>
+            <a href="/leaderboard/hard">Hard</a>
+        </p>
+
+            <a href="/">Home</a> 
     </body>
 </html>

@@ -144,9 +144,11 @@ def calculate_streak_length(user_id, cur_quiz_id):
 
 
 def leaderboard(page, difficulty):
+    if isinstance(difficulty, basestring):
+        difficulty = question.Difficulties.index(difficulty.upper())
     c = g.database.cursor()
 
-    c.execute('SELECT username, highscore from users_highscores INNER JOIN users ON (users_highscores.userid = users.id) ORDER BY highscore DESC LIMIT 10 OFFSET %s', (page*10,))
+    c.execute('SELECT username, highscore from users_highscores INNER JOIN users ON (users_highscores.userid = users.id) WHERE users_highscores.difficulty = %s ORDER BY highscore DESC LIMIT 10 OFFSET %s', (page*10, difficulty))
     result = c.fetchall()
     c.close()
 
