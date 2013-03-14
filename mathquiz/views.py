@@ -173,4 +173,19 @@ def leaderboard(difficulty, page):
     leaderboardSize = database.leaderboard_size(difficulty)
     leaderboardPages = leaderboardSize / 10
 
-    return render_template('leaderboard.html', page=page, lastPage=(page==leaderboardPages), leaderboard=leaderboard)
+    return render_template('leaderboard.html',
+            page=page,
+            lastPage=(page==leaderboardPages),
+            leaderboard=leaderboard)
+
+
+@app.route('/user/profile/<int:user_id>')
+def profile(user_id):
+    return render_template('profile.html',
+            username=database.fetch_user_name(user_id),
+            difficulty=database.fetch_user_difficulty(user_id),
+            startedDate=database.fetch_user_joined_date(user_id),
+            gamesPlayed=database.fetch_user_games_started(user_id),
+            gamesCompleted=database.fetch_user_games_completed(user_id),
+            easyScore=database.fetch_user_score(user_id, question.Difficulties.EASY)
+        )

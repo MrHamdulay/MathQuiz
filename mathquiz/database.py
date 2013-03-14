@@ -93,7 +93,7 @@ def cumulative_quiz_score(quiz_id):
 
 def create_quiz(type):
     c = g.database.cursor()
-    c.execute('INSERT INTO quiz (type, start_time, end_time, answered_by_userid) VALUES (%s, NOW(), NULL, %s)', (type, session['userId']))
+    c.execute('INSERT INTO quiz (type, start_time, end_time, user_id) VALUES (%s, NOW(), NULL, %s)', (type, session['userId']))
     c.execute('SELECT lastval()')
     quiz_id = c.fetchone()[0]
 
@@ -178,7 +178,7 @@ def username_exists(username):
 
 def fetch_user_rank(user_id, difficulty):
     if isinstance(difficulty, basestring):
-        difficulty = question.Difficulties.index(difficulty)
+        difficulty = question.Difficulties.index(difficulty.upper())
 
     c = g.database.cursor()
     c.execute('WITH ranks AS (SELECT userid, rank() OVER (ORDER BY highscore DESC) as rank FROM users_highscores WHERE difficulty = %s) SELECT rank FROM ranks WHERE userid = %s LIMIT 1', (difficulty, user_id))
@@ -215,3 +215,43 @@ def submit_feedback(user_id, feedback):
     c.close()
 
     g.database.commit()
+
+def fetch_user_games_started(user_id):
+    c = g.database.cursor()
+    c.execute('SELECT count(*) FROM quiz WHERE user_id = %s', (user_id, ))
+    count = c.fetchone()[0]
+    c.close()
+
+    return count
+
+def fetch_user_games_completed(user_id):
+    c = g.database.cursor()
+    c.execute('SELECT count(*) FROM quiz WHERE user_id = %s AND end_time IS NOT NULL', (user_id, ))
+    count = c.fetchone()[0]
+    c.close()
+
+    return count
+
+def fetch_user_joined_date(user_id):
+    c = g.database.cursor()
+    c.execute('SELECT joined_date FROM users WHERE id = %s', (user_id, ))
+    joined_date = c.fetchone()[0]
+    c.close()
+
+    return joined_date
+
+def fetch_user_name(user_id):
+    c = g.database.cursor()
+    c.execute('SELECT username FROM users WHERE id = %s', (user_id, ))
+    username = c.fetchone()[0]
+    c.close()
+
+    return username
+
+def fetch_user_difficulty(user_id):
+    c = g.database.cursor()
+    c.execute('SELECT difficulty FROM users WHERE id = %s', (user_id, ))
+    difficulty = c.fetchone()[0]
+    c.close()
+
+    return question.Difficulties[difficulty]

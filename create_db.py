@@ -25,7 +25,7 @@ try:
                 'id SERIAL,'
                 'type varchar(20),'
                 'start_time timestamp,'
-                'answered_by_userid integer,' #user id from users
+                'user_id integer,' #user id from users
                 'num_correct integer,'
                 'num_questions integer,'
                 'score integer,'

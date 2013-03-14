@@ -1,0 +1,19 @@
+{% extends "template.html" %}
+{% block body %}
+<p><b>{{ username }}</b></p>
+<p>
+    Difficulty Level: <i>{{ difficulty }}</i><br />
+    Started Date: {{ startedDate }}<br />
+    Games Played: {{ gamesPlayed }}<br />
+    Games Completed: {{ gamesCompleted }}<br />
+</p>
+<p>
+<b>High Scores</b><br />
+Easy: {{ easyScore }}<br />
+{% if mediumScore %}
+Medium: {{ mediumscore }}
+{% endif %}
+{% if hardScore %}
+Hard: {{ hardScore }}
+{% endif %}
+{% endblock %}
