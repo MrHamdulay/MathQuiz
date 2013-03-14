@@ -107,6 +107,8 @@ def quiz(typee):
     else:
         # calculate score
         numberAnswered = correctlyAnswered+incorrectlyAnswered
+
+        oldHighScore = database.fetch_user_score(session['userId'])
         oldLeaderboardPosition = database.fetch_user_rank(session['userId'])
         score = database.quiz_complete(session['quizId'], correctlyAnswered, numberAnswered)
         newLeaderboardPosition = database.fetch_user_rank(session['userId'])
@@ -125,6 +127,7 @@ def quiz(typee):
             correct=userAnswerCorrect,
             numberCorrect=correctlyAnswered,
             newDifficulty=newDifficulty,
+            oldHighScore=oldHighScore,
             score=score,
             leaderboardJump=newLeaderboardPosition-oldLeaderboardPosition,
             total=correctlyAnswered+incorrectlyAnswered))
