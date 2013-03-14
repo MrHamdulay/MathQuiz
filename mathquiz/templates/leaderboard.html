@@ -6,7 +6,7 @@
             {% for user in leaderboard %}
             <b> {{ loop.index  + page*10 }}) </b> {{ user[0] }} ({{ user[1] }}) <br />
             {% else %}
-            Leaderboard is empty. Meh.
+            There isn't anyone on the leaderboard! Be the first and make your mark!
             {% endfor %}
         </p>
         <p>

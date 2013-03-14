@@ -80,9 +80,10 @@ def quiz(typee):
             score += streakScore
             if streakScore != 0:
                 scoring.append('Streak of %d. %d bonus points!' % (streakLength, streakScore))
-            scoring.append('Score so far: %d points!' % score)
 
             database.quiz_answer(session['userId'], session['quizId'], previousAnswer, userAnswer, userAnswerCorrect, score)
+
+            scoring.append('Score so far: %d points!' % database.cumulative_quiz_score(session['quizId']))
             if userAnswerCorrect:
                correctlyAnswered += 1
             else:
