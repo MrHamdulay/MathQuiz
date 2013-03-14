@@ -31,7 +31,7 @@ def index():
             username=session['username'],
             current_difficulty=session['difficulty'].title(),
             actual_difficulty=database.fetch_user_difficulty(session['userId']).title(),
-            rank=database.fetch_user_rank(session['userId']),
+            rank=database.fetch_user_rank(session['userId'], session['difficulty']),
             total_users=database.fetch_number_users()
         )
 
@@ -101,17 +101,22 @@ def quiz(typee):
         response = make_response(render_template('quiz.html',
             question=str(q),
             scoring=scoring,
-            timeRemaining=round(timeRemaining, 1),
+            timeRemaining=int(timeRemaining),
             answered = userAnswer is not None, #has the user answered this question
             correct=userAnswerCorrect))
     else:
         # calculate score
         numberAnswered = correctlyAnswered+incorrectlyAnswered
 
-        oldHighScore = database.fetch_user_score(session['userId'])
-        oldLeaderboardPosition = database.fetch_user_rank(session['userId'])
-        score = database.quiz_complete(session['quizId'], correctlyAnswered, numberAnswered)
-        newLeaderboardPosition = database.fetch_user_rank(session['userId'])
+        oldHighScore = database.fetch_user_score(session['userId'], difficulty)
+        oldLeaderboardPosition = database.fetch_user_rank(session['userId'], difficulty)
+        score = database.quiz_complete(difficulty, session['quizId'], correctlyAnswered, numberAnswered)
+        newLeaderboardPosition = database.fetch_user_rank(session['userId'], difficulty)
+        leaderboardJump = None
+        if oldLeaderboardPosition is not None and newLeaderboardPosition is not None:
+            leadboardJump = newLeaderboardPosition - oldLeaderboardPosition
+
+        # reset quiz
         session['quizId'] = -1
 
         newDifficulty = False
@@ -123,13 +128,14 @@ def quiz(typee):
                 database.set_user_difficulty(session['userId'], newDifficulty)
                 newDifficulty = question.Difficulties[newDifficulty].lower()
 
+
         response = make_response(render_template('quizComplete.html',
             correct=userAnswerCorrect,
             numberCorrect=correctlyAnswered,
             newDifficulty=newDifficulty,
             oldHighScore=oldHighScore,
             score=score,
-            leaderboardJump=newLeaderboardPosition-oldLeaderboardPosition,
+            leaderboardJump=leaderboardJump,
             total=correctlyAnswered+incorrectlyAnswered))
 
 
@@ -140,14 +146,18 @@ def quiz(typee):
 
     return response
 
-@app.route('/leaderboard', defaults={'page': 0})
-@app.route('/leaderboard/<int:page>')
-def leaderboard(page):
+@app.route('/leaderboard')
+def redirect_leaderboard():
+    return redirect('/leaderboard/%s' % (session['difficulty'].lower()))
+
+@app.route('/leaderboard/<difficulty>', defaults={'page': 0})
+@app.route('/leaderboard/<difficulty>/<int:page>')
+def leaderboard(difficulty, page):
     if page < 0:
         page = 0
-    leaderboard=database.leaderboard(page)
+    leaderboard=database.leaderboard(page, difficulty)
 
-    leaderboardSize = database.leaderboard_size()
+    leaderboardSize = database.leaderboard_size(difficulty)
     leaderboardPages = leaderboardSize / 10
 
     return render_template('leaderboard.html', page=page, lastPage=(page==leaderboardPages), leaderboard=leaderboard)

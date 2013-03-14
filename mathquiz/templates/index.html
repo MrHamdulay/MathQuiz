@@ -9,7 +9,13 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-        <p>Welcome <i>{{ username }}</i> ({{ rank }} / {{ total_users }})</p>
+        <p>Welcome <i>{{ username }}</i> 
+        {% if rank %} 
+        ({{ rank }} / {{ total_users }})
+        {% else %}
+        (unranked)
+        {% endif %}
+        </p>
         <p>
             Quiz<br />
             <a href="/quiz/addsub">Addition and Subtraction</a><br />

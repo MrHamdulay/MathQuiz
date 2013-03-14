@@ -12,10 +12,14 @@ try:
                 'username VARCHAR UNIQUE,'
                 'difficulty INTEGER DEFAULT 0,'
                 'mxit_userid varchar(100) UNIQUE,'
-                'joined_date timestamp DEFAULT NOW(),'
-                'score integer DEFAULT 0'
+                'joined_date timestamp DEFAULT NOW()'
                 ')')
-    c.execute('CREATE INDEX score ON users (score)')
+    c.execute('CREATE TABLE users_highscores ('
+                'userid SERIAL,'
+                'difficulty INTEGER,'
+                'highscore INTEGER'
+                ')')
+    c.execute('CREATE UNIQUE INDEX highscores ON users_highscores (userid, difficulty)')
 
     c.execute('CREATE TABLE quiz ('
                 'id SERIAL,'
