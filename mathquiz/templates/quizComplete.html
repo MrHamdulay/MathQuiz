@@ -1,10 +1,13 @@
 <!doctype html>
 <html>
     <body>
-        {% if correct %}
-        <p style="color: rgb(0, 200, 0);">Correct!</p>
+        {% if correct is none %}
         {% else %}
-        <p style="color: rgb(200, 0, 0);">Incorrect :(</p>
+            {% if correct %}
+            <p style="color: rgb(0, 200, 0);">Correct!</p>
+            {% else %}
+            <p style="color: rgb(200, 0, 0);">Incorrect :(</p>
+            {% endif %}
         {% endif %}
         {% if newDifficulty %}
         <p style="color: rgb(10, 210, 0);">{{ newDifficulty }} difficulty level attained! Click on 'change
