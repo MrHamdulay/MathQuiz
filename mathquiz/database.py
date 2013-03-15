@@ -40,7 +40,6 @@ def set_user(mxit_user_id):
         c.close()
 
 def create_user():
-    print request.headers
     try:
         mxit_user_id = request.headers['X-Mxit-Userid-R']
         mxit_nick = request.headers['X-Mxit-Nick']
