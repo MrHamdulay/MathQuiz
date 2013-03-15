@@ -36,7 +36,7 @@ def some_view(request):
     ga.track(request)
 
     #<...>
-    
+
 #Flask basic usage:
 
 import flask
@@ -77,34 +77,34 @@ COOKIE_NAME = "__utmmobile"
 COOKIE_PATH = "/"
 COOKIE_USER_PERSISTENCE = 63072000
 
-GIF_DATA = reduce(lambda x,y: x + struct.pack('B', y), 
+GIF_DATA = reduce(lambda x,y: x + struct.pack('B', y),
                   [0x47,0x49,0x46,0x38,0x39,0x61,
                    0x01,0x00,0x01,0x00,0x80,0x00,
                    0x00,0x00,0x00,0x00,0xff,0xff,
                    0xff,0x21,0xf9,0x04,0x01,0x00,
                    0x00,0x00,0x00,0x2c,0x00,0x00,
-                   0x00,0x00,0x01,0x00,0x01,0x00, 
+                   0x00,0x00,0x01,0x00,0x01,0x00,
                    0x00,0x02,0x01,0x44,0x00,0x3b], '')
 
 # WHITE GIF:
-# 47 49 46 38 39 61 
-# 01 00 01 00 80 ff 
-# 00 ff ff ff 00 00 
-# 00 2c 00 00 00 00 
-# 01 00 01 00 00 02 
-# 02 44 01 00 3b                                       
+# 47 49 46 38 39 61
+# 01 00 01 00 80 ff
+# 00 ff ff ff 00 00
+# 00 2c 00 00 00 00
+# 01 00 01 00 00 02
+# 02 44 01 00 3b
 
 # TRANSPARENT GIF:
-# 47 49 46 38 39 61 
-# 01 00 01 00 80 00 
-# 00 00 00 00 ff ff 
-# ff 21 f9 04 01 00 
-# 00 00 00 2c 00 00 
-# 00 00 01 00 01 00 
-# 00 02 01 44 00 3b                  
+# 47 49 46 38 39 61
+# 01 00 01 00 80 00
+# 00 00 00 00 ff ff
+# ff 21 f9 04 01 00
+# 00 00 00 2c 00 00
+# 00 00 01 00 01 00
+# 00 02 01 44 00 3b
 
 class GATracker(object):
-    
+
     def __init__(self, domain, account):
         u'''
         @id - id in Google Analytics
@@ -150,15 +150,15 @@ class GATracker(object):
         """
         // Writes the bytes of a 1x1 transparent gif into the response.
 
-        Returns a dictionary with the following values: 
-    
+        Returns a dictionary with the following values:
+
         { 'response_code': '200 OK',
           'response_headers': [(Header_key, Header_value), ...]
           'response_body': 'binary data'
         }
         """
-        response = {'response_code': '204 No Content', 
-                    'response_headers': [('Content-Type', 'image/gif'),                                     
+        response = {'response_code': '204 No Content',
+                    'response_headers': [('Content-Type', 'image/gif'),
                                          ('Cache-Control', 'private, no-cache, no-cache=Set-Cookie, proxy-revalidate'),
                                          ('Pragma', 'no-cache'),
                                          ('Expires', 'Wed, 17 Sep 1975 21:32:10 GMT'),
@@ -173,26 +173,26 @@ class GATracker(object):
       // Make a tracking request to Google Analytics from this server.
       // Copies the headers from the original request to the new one.
       // If request containg utmdebug parameter, exceptions encountered
-      // communicating with Google Analytics are thown.    
+      // communicating with Google Analytics are thown.
         """
-        http = httplib2.Http()    
+        http = httplib2.Http()
         try:
-            resp, content = http.request(utm_url, 
-                                         "GET", 
+            resp, content = http.request(utm_url,
+                                         "GET",
                                          headers={'User-Agent': useragent,
                                                   'Accepts-Language:': os.environ.get("HTTP_ACCEPT_LANGUAGE",'')}
                                          )
-            # dbgMsg("success")     
+            # dbgMsg("success")
             return resp
-            #print content       
+            #print content
         except httplib2.HttpLib2Error, e:
-            errMsg("fail: %s" % utm_url)            
+            errMsg("fail: %s" % utm_url)
             if environ['GET'].get('utmdebug'):
                 raise Exception("Error opening: %s" % utm_url)
             else:
                 pass
 
-        
+
     def parse_cookie(self, cookie):
         """ borrowed from django.http """
         if cookie == '':
@@ -207,27 +207,27 @@ class GATracker(object):
         cookiedict = {}
         for key in c.keys():
             cookiedict[key] = c.get(key).value
-        return cookiedict        
-      
+        return cookiedict
+
     def track(self, *args, **kwargs):
         u"""
         A short synonym for track_page_view
         """
         return self.track_page_view(*args, **kwargs)
-        
+
     def track_page_view(self, path, visitor_id, ip_address, useragent='Unknown'):
         """
         // Track a page view, updates all the cookies and campaign tracker,
         // makes a server side request to Google Analytics and writes the transparent
         // gif byte data to the response.
-        """    
+        """
         time_tup = time.localtime(time.time() + COOKIE_USER_PERSISTENCE)
 
         domain = self.domain
 
         # Get the referrer from the utmr parameter, this is the referrer to the
         # page that contains the tracking pixel, not the referrer for tracking
-        # pixel.    
+        # pixel.
         document_referer = "-"
         document_path = path
 
@@ -235,7 +235,7 @@ class GATracker(object):
         cookie = SimpleCookie()
         cookie[COOKIE_NAME] = visitor_id
         morsel = cookie[COOKIE_NAME]
-        morsel['expires'] = time.strftime('%a, %d-%b-%Y %H:%M:%S %Z', time_tup) 
+        morsel['expires'] = time.strftime('%a, %d-%b-%Y %H:%M:%S %Z', time_tup)
         morsel['path'] = COOKIE_PATH
 
         utm_gif_location = "http://www.google-analytics.com/__utm.gif"
@@ -251,17 +251,17 @@ class GATracker(object):
                 "&utmac=" + self.account + \
                 "&utmcc=__utma%3D999.999.999.999.999.1%3B" + \
                 "&utmvid=" + visitor_id + \
-                "&utmip=" + ip_address
-        # dbgMsg("utm_url: " + utm_url)    
+                "&utmip=" + str(ip_address)
+        # dbgMsg("utm_url: " + utm_url)
         return self.send_request_to_google_analytics(utm_url,useragent)
 
 
 class DjangoGATracker(GATracker):
-    
+
     def __init__(self, domain, account):
         super(DjangoGATracker, self).__init__(domain, account)
 
-    
+
     def get_client_ip(self, request):
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
         if x_forwarded_for:
@@ -269,36 +269,36 @@ class DjangoGATracker(GATracker):
         else:
             ip = request.META.get('REMOTE_ADDR')
         return ip
-    
+
     def get_session_id(self, request):
-        
+
         #fix for django 1.4
         if hasattr(request, 'session') and hasattr(request.session, 'session_key') and getattr(request.session, 'session_key') is None:
             logging.debug("Creating a session key since there is none..")
             request.session.create()
-        
+
         try:
             return request.session.session_key
         except AttributeError:
             return None
-    
+
     def track_page_view(self, request, path = None):
-        
+
         #getting path from request
         if not path:
             path = request.path
             #add args if any
             if request.META.get("QUERY_STRING",None):
                 path+='?' + request.META.get("QUERY_STRING",None)
-        
+
         super(DjangoGATracker, self).track_page_view(
-                                path = path, 
+                                path = path,
                                 visitor_id = self.get_session_id,
                                 ip_address = self.get_client_ip(request),
                                 useragent = request.META.get('HTTP_USER_AGENT', 'Unknown')
                                 )
-        
-        
+
+
 class FlaskGATracker(GATracker):
 
     def __init__(self, domain, account, user_id_key="tr_user_id"):
@@ -307,7 +307,7 @@ class FlaskGATracker(GATracker):
         super(FlaskGATracker, self).__init__(domain, account)
 
     def track_page_view(self, request, session, user_id=None, path = None):
-        
+
         #getting path from request
         if not path:
             path = request.path
@@ -316,17 +316,17 @@ class FlaskGATracker(GATracker):
                 path +='?' + request.url.split('?')[1]
             except Exception, e:
                 pass
-        
+
         #if no user id is specified, try to get one from session
-        if not user_id:        
+        if not user_id:
             user_id = session.get(self.user_id_key, None)
             #or create and save a new one
             if not user_id:
                 session[self.user_id_key] = str(uuid.uuid4())
                 user_id = session[self.user_id_key]
-            
+
         super(FlaskGATracker, self).track_page_view(
-                                path = path, 
+                                path = path,
                                 visitor_id = user_id,
                                 ip_address = request.remote_addr,
                                 useragent = request.user_agent.string
