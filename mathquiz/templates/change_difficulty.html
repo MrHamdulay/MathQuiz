@@ -4,8 +4,12 @@
 <a href="/set_difficulty/easy">Easy</a><br />
 {% if difficulty >= 1 %}
 <a href="/set_difficulty/medium">Medium</a><br />
+{% else %}
+Medium<br />
 {% endif %}
 {% if difficulty >= 2 %}
 <a href="/set_difficulty/hard">Hard</a><br />
+{% else %}
+Hard
 {% endif %}
 {% endblock %}
