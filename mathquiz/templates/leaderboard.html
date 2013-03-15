@@ -4,7 +4,7 @@
         <p><b>Leaderboard</b></p>
         <p>
             {% for user in leaderboard %}
-            <b> {{ loop.index  + page*10 }}) </b> <a href="/user/profile/{{user[2]}}">{{ user[0] }}</a> ({{ user[1] }}) <br />
+            <b> {{ loop.index  + page*10 }}) </b> <a href="/user/profile/{{user[2]}}">{{ user[0] }}</a> ({{ user[1] }}) <br /> 
             {% else %}
             There isn't anyone on the leaderboard! Be the first and make your mark!
             {% endfor %}

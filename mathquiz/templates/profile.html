@@ -9,11 +9,7 @@
 </p>
 <p>
 <b>High Scores</b><br />
-Easy: {{ easyScore }}<br />
-{% if mediumScore %}
-Medium: {{ mediumscore }}
-{% endif %}
-{% if hardScore %}
-Hard: {{ hardScore }}
-{% endif %}
+Easy: {{ highscores[0] }}<br />
+Medium: {{ highscores[1] }}<br />
+Hard: {{ highscores[2] }}<br />
 {% endblock %}

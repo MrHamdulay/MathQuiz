@@ -182,11 +182,21 @@ def leaderboard(difficulty, page):
 
 @app.route('/user/profile/<int:user_id>')
 def profile(user_id):
+    username=database.fetch_user_difficulty(user_id)
+    difficulty=database.fetch_user_difficulty(user_id)
+    startedDate=database.fetch_user_joined_date(user_id)
+
+    gamesPlayed=database.fetch_user_games_started(user_id)
+    gamesCompleted=database.fetch_user_games_completed(user_id)
+
+    highscores = [database.fetch_user_score(user_id, difficulty) for difficulty in question.Difficulties]
+    print highscores
+
     return render_template('profile.html',
-            username=database.fetch_user_name(user_id),
-            difficulty=database.fetch_user_difficulty(user_id),
-            startedDate=database.fetch_user_joined_date(user_id),
-            gamesPlayed=database.fetch_user_games_started(user_id),
-            gamesCompleted=database.fetch_user_games_completed(user_id),
-            easyScore=database.fetch_user_score(user_id, question.Difficulties.EASY)
+            username=username,
+            difficulty=difficulty,
+            startDated=startedDate,
+            gamesPlayed=gamesPlayed,
+            gamesCompleted=gamesCompleted,
+            highscores=highscores
         )
