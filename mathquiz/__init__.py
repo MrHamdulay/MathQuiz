@@ -8,3 +8,5 @@ app.secret_key = config.secret_key
 
 import database
 import views
+
+import analytics

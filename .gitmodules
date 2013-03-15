@@ -1,0 +1,3 @@
+[submodule "pyga"]
+	path = pyga
+	url = git@bitbucket.org:DataGreed/pyga.git
