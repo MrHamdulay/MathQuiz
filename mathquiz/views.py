@@ -39,6 +39,7 @@ def index():
     # if the user has not given us a username we should probably ask for one
     return render_template('index.html',
             username=session['username'],
+            userId=session['userId'],
             current_difficulty=session['difficulty'].title(),
             actual_difficulty=database.fetch_user_difficulty(session['userId']).title(),
             rank=database.fetch_user_rank(session['userId'], session['difficulty']),

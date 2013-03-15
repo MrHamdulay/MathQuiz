@@ -9,7 +9,7 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-        <p>Welcome <i>{{ username }}</i> 
+        <p>Welcome <a href="/user/profile/{{userId}}">{{ username }}</a> 
         {% if rank %} 
         &nbsp;({{ rank }} / {{ total_users }})
         {% else %}

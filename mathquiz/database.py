@@ -150,7 +150,7 @@ def leaderboard(page, difficulty):
     print difficulty
     c = g.database.cursor()
 
-    c.execute('select username, highscore from users_highscores, users where users_highscores.difficulty=%s and userid=id ORDER BY highscore DESC OFFSET %s LIMIT 10', (difficulty, page*10));
+    c.execute('select username, highscore, users.id from users_highscores, users where users_highscores.difficulty=%s and userid=id ORDER BY highscore DESC OFFSET %s LIMIT 10', (difficulty, page*10));
     result = c.fetchall()
     c.close()
 
