@@ -34,6 +34,7 @@ def set_difficulty(difficulty=None):
 
 @app.route('/')
 def index():
+    1/0
     session['quizId'] = -1
 
     # if the user has not given us a username we should probably ask for one

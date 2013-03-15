@@ -1,4 +1,7 @@
 Flask
 psycopg2
 Tornado
-requests
+httplib2
+raven
+ipython
+blinker
