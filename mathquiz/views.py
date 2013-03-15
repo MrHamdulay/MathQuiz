@@ -118,7 +118,8 @@ def quiz(typee):
             scoring=scoring,
             timeRemaining=int(timeRemaining),
             answered = userAnswer is not None, #has the user answered this question
-            correct=userAnswerCorrect))
+            correct=userAnswerCorrect,
+            correctAnswer=previousAnswer))
     else:
         # calculate score
         numberAnswered = correctlyAnswered+incorrectlyAnswered
