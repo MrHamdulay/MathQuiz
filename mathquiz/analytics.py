@@ -7,4 +7,4 @@ from mathquiz import app, config
 def track():
     if config.analytics_enabled:
         tracker = FlaskGATracker(config.analytics_account, config.analytics_domain)
-        tracker.track(request, session)
+        tracker.track(request, session, session['userId'])
