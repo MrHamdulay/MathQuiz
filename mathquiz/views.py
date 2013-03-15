@@ -137,11 +137,12 @@ def quiz(typee):
         newDifficulty = False
         # if user answered > 80% of answers correctly and answered > 10 correctly increase difficulty level
         if numberAnswered >= 8 and (float(correctlyAnswered) / numberAnswered) > 0.8:
-            newDifficulty = question.Difficulties.index(session['difficulty'].upper())+1
+            newDifficultyIndex = question.Difficulties.index(session['difficulty'].upper())+1
             # don't go over max difficulty (hard)
-            if newDifficulty < len(question.Difficulties):
-                database.set_user_difficulty(session['userId'], newDifficulty)
-                newDifficulty = question.Difficulties[newDifficulty].lower()
+            if newDifficultyIndex < len(question.Difficulties):
+                if newDifficultyIndex > question.Difficulties.index(database.fetch_user_difficulty(session['userId'])):
+                    newDifficulty = question.Difficulties[newDifficultyIndex].lower()
+                    database.set_user_difficulty(session['userId'], newDifficultyIndex)
 
 
         response = make_response(render_template('quizComplete.html',
