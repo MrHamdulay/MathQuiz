@@ -5,5 +5,6 @@ from mathquiz import app, config
 
 @app.before_request
 def track():
-    tracker = FlaskGATracker(config.analytics_account, config.analytics_domain)
-    tracker.track(request, session)
+    if config.analytics_enabled:
+        tracker = FlaskGATracker(config.analytics_account, config.analytics_domain)
+        tracker.track(request, session)
