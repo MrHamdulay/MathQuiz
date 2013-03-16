@@ -96,6 +96,7 @@ def quiz(typee):
 
             score = question.score(difficulty, userAnswerCorrect)
 
+            database.quiz_answer(session['userId'], session['quizId'], previousAnswer, userAnswer, userAnswerCorrect, score)
             # calculate streak bonus
             streakLength = database.calculate_streak_length(session['userId'], session['quizId'])
             streakScore = 0 if streakLength < 3 else 5 + streakLength
@@ -103,7 +104,6 @@ def quiz(typee):
             if streakScore != 0:
                 scoring.append('Streak of %d. %d bonus points!' % (streakLength, streakScore))
 
-            database.quiz_answer(session['userId'], session['quizId'], previousAnswer, userAnswer, userAnswerCorrect, score)
 
             scoring.append('Score so far: %d points!' % database.cumulative_quiz_score(session['quizId']))
             analytics.track('quiz_answer', {'user': session['userId'], 'quiz':session['quizId'], 'correct':userAnswerCorrect})
