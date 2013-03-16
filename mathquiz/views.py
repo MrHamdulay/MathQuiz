@@ -146,11 +146,15 @@ def quiz(typee):
         if numberAnswered >= 8 and (float(correctlyAnswered) / numberAnswered) > 0.8:
             newDifficultyIndex = question.Difficulties.index(session['difficulty'].upper())+1
             # don't go over max difficulty (hard)
-            if newDifficultyIndex < len(question.Difficulties):
-                if newDifficultyIndex > question.Difficulties.index(database.fetch_user_difficulty(session['userId'])):
+            if newDifficultyIndex < len(question.Difficulties) \
+                    and newDifficultyIndex > question.Difficulties.index(database.fetch_user_difficulty(session['userId'])):
+                if question.Types[typee.upper()] == question.Types.ALL:
                     newDifficulty = question.Difficulties[newDifficultyIndex].lower()
                     analytics.track('difficulty_increased', {'user':session['userId'], 'new_difficulty':newDifficulty})
                     database.set_user_difficulty(session['userId'], newDifficultyIndex)
+                else:
+                    print 'good enough'
+                    flash('You are good enough at this section to be on another level. Show us your skills at Badass mode to level up')
 
 
         response = make_response(render_template('quizComplete.html',
