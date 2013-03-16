@@ -2,6 +2,7 @@ import psycopg2
 
 from flask import g, request, session
 import simplejson
+import base64
 
 from mathquiz import app, config, SCHEMA_VERSION, question
 from mathquiz.question import Question
