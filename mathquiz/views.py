@@ -107,7 +107,7 @@ def quiz(typee):
 
 
             scoring.append('Score: %d points!' % database.cumulative_quiz_score(session['quizId']))
-            analytics.track('quiz_answer', {'quiz':session['quizId'], 'correct':userAnswerCorrect, 'difficulty':difficutly,'type':typee})
+            analytics.track('quiz_answer', {'quiz':session['quizId'], 'correct':userAnswerCorrect, 'difficulty':difficulty,'type':typee})
             if userAnswerCorrect:
                correctlyAnswered += 1
             else:
