@@ -38,11 +38,6 @@ if config.mixpanel_enabled:
 
         database.add_analytics(event, properties)
 
-        params = {"event": event, "properties": properties}
-        data = base64.b64encode(simplejson.dumps(params))
-        request = "http://api.mixpanel.com/track/?data=" + data
-        return subprocess.Popen(("curl",request), stderr=subprocess.PIPE,
-            stdout=subprocess.PIPE)
 else:
     def track(*args):
         print 'not tracking. mixpanel disabled', args
