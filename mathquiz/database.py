@@ -253,7 +253,7 @@ def fetch_user_difficulty(user_id):
 def add_analytics(event, properties):
     c = g.database.cursor()
     params = base64.b64encode(simplejson.dumps({'event':event, 'properties':properties}))
-    c.execute('INSERT INTO analytics_queue (data) values (%s)', (params))
+    c.execute('INSERT INTO analytics_queue (data) values (%s)', (params, ))
     c.excecute('NOTIFY analytics')
     c.close()
     g.database.commit()
