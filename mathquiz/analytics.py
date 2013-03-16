@@ -4,6 +4,7 @@ from flask import request, session
 import subprocess
 import base64
 import simplejson
+from time import time
 
 from mathquiz import app, config
 
@@ -28,9 +29,14 @@ if config.mixpanel_enabled:
             properties = {}
 
         token = config.mixpanel_token
+        properties['distinct_id'] = session['userId']
+        properties['mp_name_tag'] = session['username']
+        properties['time'] = str(int(time))
 
         if "token" not in properties:
             properties["token"] = token
+
+        database.add_analytics(event, properties)
 
         params = {"event": event, "properties": properties}
         data = base64.b64encode(simplejson.dumps(params))

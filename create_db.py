@@ -55,6 +55,8 @@ try:
                     'submitted_date TIMESTAMP DEFAULT NOW()'
                     ')')
 
+    c.execute('CREATE TABLE analytics_queue (id SERIAL, event VARCHAR, properties TEXT)')
+
 
     db.commit()
 except psycopg2.ProgrammingError, e:

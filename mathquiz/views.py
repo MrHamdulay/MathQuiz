@@ -36,7 +36,7 @@ def set_difficulty(difficulty=None):
 @app.route('/')
 def index():
     session['quizId'] = -1
-    analytics.track('page', {'user': session['userId'], 'page':'index'})
+    analytics.track('page', {'page':'index'})
 
 
     # if the user has not given us a username we should probably ask for one
@@ -70,7 +70,7 @@ def quiz(typee):
     except KeyError:
         # force a new quiz
         session['quizId'] = -1
-        analytics.track('new_quiz', {'user': session['userId']})
+        analytics.track('new_quiz')
 
     previousAnswer, userAnswer, userAnswerCorrect = None, None, None
     scoring = []
@@ -107,7 +107,7 @@ def quiz(typee):
 
 
             scoring.append('Score: %d points!' % database.cumulative_quiz_score(session['quizId']))
-            analytics.track('quiz_answer', {'user': session['userId'], 'quiz':session['quizId'], 'correct':userAnswerCorrect})
+            analytics.track('quiz_answer', {'quiz':session['quizId'], 'correct':userAnswerCorrect, 'difficulty':difficutly,'type':typee})
             if userAnswerCorrect:
                correctlyAnswered += 1
             else:
@@ -138,7 +138,7 @@ def quiz(typee):
         if oldLeaderboardPosition is not None and newLeaderboardPosition is not None:
             leadboardJump = newLeaderboardPosition - oldLeaderboardPosition
 
-        analytics.track('quiz_completed', {'user':session['userId'], 'quiz':session['quizId'], 'score':score})
+        analytics.track('quiz_completed', {'distinct_id':session['userId'], 'quiz':session['quizId'], 'score':score})
         # reset quiz
         session['quizId'] = -1
 
@@ -151,7 +151,7 @@ def quiz(typee):
                     and newDifficultyIndex > question.Difficulties.index(database.fetch_user_difficulty(session['userId'])):
                 if question.Types[typee.upper()] == question.Types.ALL:
                     newDifficulty = question.Difficulties[newDifficultyIndex].lower()
-                    analytics.track('difficulty_increased', {'user':session['userId'], 'new_difficulty':newDifficulty})
+                    analytics.track('difficulty_increased', {'new_difficulty':newDifficulty})
                     database.set_user_difficulty(session['userId'], newDifficultyIndex)
                 else:
                     flash('You are good enough at this section to be on another level. Show us your skills at Badass mode to level up')
@@ -182,7 +182,7 @@ def redirect_leaderboard():
 def leaderboard(difficulty, page):
     if page < 0:
         page = 0
-    analytics.track('page', {'user': session['userId'], 'page':'leaderboard- %s'%difficulty})
+    analytics.track('page', {'page':'leaderboard-%s'%difficulty})
     leaderboard=database.leaderboard(page, difficulty)
 
     leaderboardSize = database.leaderboard_size(difficulty)
@@ -196,8 +196,8 @@ def leaderboard(difficulty, page):
 
 @app.route('/user/profile/<int:user_id>')
 def profile(user_id):
-    analytics.track('page', {'user': session['userId'], 'page':'profile-%d'%user_id})
-    analytics.track('page', {'user': session['userId'], 'page':'profile'})
+    analytics.track('page', {'page':'profile-%d'%user_id})
+    analytics.track('page', {'page':'profile'})
     username=database.fetch_user_name(user_id)
     difficulty=database.fetch_user_difficulty(user_id)
     print difficulty

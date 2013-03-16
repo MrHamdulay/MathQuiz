@@ -247,3 +247,10 @@ def fetch_user_difficulty(user_id):
     c.close()
 
     return question.Difficulties[difficulty]
+
+def add_analytics(event, properties):
+    c = g.database.cursor()
+    c.execute('INSERT INTO analytics_queue (event, properties) values (%s, %s)', (event, properties))
+    c.excecute('NOTIFY analytics')
+    c.close()
+    g.database.commit()
