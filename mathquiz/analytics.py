@@ -31,7 +31,7 @@ if config.mixpanel_enabled:
         token = config.mixpanel_token
         properties['distinct_id'] = session['userId']
         properties['mp_name_tag'] = session['username']
-        properties['time'] = str(int(time))
+        properties['time'] = int(time())
 
         if "token" not in properties:
             properties["token"] = token
