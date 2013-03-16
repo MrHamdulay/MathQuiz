@@ -98,7 +98,7 @@ def quiz(typee):
 
             # calculate streak bonus
             streakLength = database.calculate_streak_length(session['userId'], session['quizId'])
-            streakScore = 0 if streakLength < 3 else 5 + streakLength
+            streakScore = 0 if streakLength < 3 else 3 + streakLength
             if streakScore != 0 and userAnswerCorrect:
                 score += streakScore
                 scoring.append('Streak of %d. %d bonus points!' % (streakLength, streakScore))
