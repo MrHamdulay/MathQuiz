@@ -6,7 +6,7 @@ import base64
 import simplejson
 from time import time
 
-from mathquiz import app, config
+from mathquiz import app, config, database
 
 @app.before_request
 def google_track():
