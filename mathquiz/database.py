@@ -2,7 +2,6 @@ import psycopg2
 
 from flask import g, request, session
 import simplejson
-import base64
 
 from mathquiz import app, config, SCHEMA_VERSION, question
 from mathquiz.question import Question
@@ -252,7 +251,7 @@ def fetch_user_difficulty(user_id):
 
 def add_analytics(event, properties):
     c = g.database.cursor()
-    params = base64.b64encode(simplejson.dumps({'event':event, 'properties':properties}))
+    params = simplejson.dumps({'event':event, 'properties':properties})
     c.execute('INSERT INTO analytics_queue (data) values (%s)', (params, ))
     c.execute('NOTIFY analytics')
     c.close()

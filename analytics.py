@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import psycopg2
 import sys
 import base64
@@ -20,7 +21,7 @@ try:
         c.execute('SELECT data FROM analytics_queue')
         for row in c:
             print 'sending ', row
-            result = requests.get("http://api.mixpanel.com/track/?data=" + row[0])
+            result = requests.get("http://api.mixpanel.com/track/?data=" + base64.b64encode(row[0]))
             print result
 
         c.execute('DELETE FROM analytics_queue')
