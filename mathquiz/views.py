@@ -153,7 +153,6 @@ def quiz(typee):
                     analytics.track('difficulty_increased', {'user':session['userId'], 'new_difficulty':newDifficulty})
                     database.set_user_difficulty(session['userId'], newDifficultyIndex)
                 else:
-                    print 'good enough'
                     flash('You are good enough at this section to be on another level. Show us your skills at Badass mode to level up')
 
 
@@ -182,7 +181,7 @@ def redirect_leaderboard():
 def leaderboard(difficulty, page):
     if page < 0:
         page = 0
-    analytics.track('page', {'user': session['userId'], 'page':'leaderboard-'+difficulty})
+    analytics.track('page', {'user': session['userId'], 'page':'leaderboard- %s'%difficulty})
     leaderboard=database.leaderboard(page, difficulty)
 
     leaderboardSize = database.leaderboard_size(difficulty)
@@ -196,7 +195,7 @@ def leaderboard(difficulty, page):
 
 @app.route('/user/profile/<int:user_id>')
 def profile(user_id):
-    analytics.track('page', {'user': session['userId'], 'page':'profile-'+user_id})
+    analytics.track('page', {'user': session['userId'], 'page':'profile-%d'%user_id})
     analytics.track('page', {'user': session['userId'], 'page':'profile'})
     username=database.fetch_user_difficulty(user_id)
     difficulty=database.fetch_user_difficulty(user_id)
@@ -206,7 +205,6 @@ def profile(user_id):
     gamesCompleted=database.fetch_user_games_completed(user_id)
 
     highscores = [database.fetch_user_score(user_id, difficulty) for difficulty in question.Difficulties]
-    print highscores
 
     return render_template('profile.html',
             username=username,
