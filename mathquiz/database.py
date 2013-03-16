@@ -200,13 +200,6 @@ def set_user_difficulty(user_id, difficulty):
     c.close()
     g.database.commit()
 
-def fetch_user_difficulty(user_id):
-    c = g.database.cursor()
-    c.execute('SELECT difficulty FROM users WHERE id = %s', (user_id, ))
-    row = c.fetchone()
-    difficulty = question.Difficulties[row[0]]
-    c.close()
-    return difficulty
 
 def submit_feedback(user_id, feedback):
     c = g.database.cursor()

@@ -197,14 +197,15 @@ def leaderboard(difficulty, page):
 def profile(user_id):
     analytics.track('page', {'user': session['userId'], 'page':'profile-%d'%user_id})
     analytics.track('page', {'user': session['userId'], 'page':'profile'})
-    username=database.fetch_user_difficulty(user_id)
+    username=database.fetch_user_name(user_id)
     difficulty=database.fetch_user_difficulty(user_id)
+    print difficulty
     startedDate=database.fetch_user_joined_date(user_id)
 
     gamesPlayed=database.fetch_user_games_started(user_id)
     gamesCompleted=database.fetch_user_games_completed(user_id)
 
-    highscores = [database.fetch_user_score(user_id, difficulty) for difficulty in question.Difficulties]
+    highscores = [database.fetch_user_score(user_id, d) for d in question.Difficulties]
 
     return render_template('profile.html',
             username=username,
@@ -212,5 +213,4 @@ def profile(user_id):
             startDated=startedDate,
             gamesPlayed=gamesPlayed,
             gamesCompleted=gamesCompleted,
-            highscores=highscores
-        )
+            highscores=highscores)
