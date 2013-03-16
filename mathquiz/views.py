@@ -16,8 +16,10 @@ def feedback():
         feedback = request.form['feedback']
         database.submit_feedback(session['userId'], feedback)
         flash('Thank you for your feedback.')
+        analytics.track('feedback')
         return redirect('/')
     else:
+        analytics.track('page', {'page':'feedback'})
         return render_template('feedback.html')
 
 @app.route('/set_difficulty')
