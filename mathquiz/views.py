@@ -94,7 +94,7 @@ def quiz(typee):
             userAnswer = int(request.form['result'])
             userAnswerCorrect = previousAnswer == userAnswer
 
-            score = question.score(difficulty, userAnswerCorrect)
+            score = question.score(type, difficulty, userAnswerCorrect)
 
             database.quiz_answer(session['userId'], session['quizId'], previousAnswer, userAnswer, userAnswerCorrect, score)
             # calculate streak bonus

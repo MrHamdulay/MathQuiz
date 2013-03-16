@@ -24,14 +24,23 @@ class Question:
 Difficulties = Enum(('EASY', 'MEDIUM', 'HARD'))
 Types = Enum(('ADDSUB', 'MULTDIV', 'ALL'))
 
-def score(difficulty, correct):
+def score(typee, difficulty, correct):
+    score = 0
+
+    # badass bonus
+    if typee == Types.ALL:
+        score += 3
+
     if not correct:
         return -3
-    if difficulty == Difficulties.EASY:
-        return 5
+    elif difficulty == Difficulties.EASY:
+        score += 5
     elif difficulty == Difficulties.MEDIUM:
-        return 7
-    return 9
+        score += 7
+    else:
+        score += 9
+
+    return score
 
 def generateAddSub(difficulty):
     operations = '+-'
