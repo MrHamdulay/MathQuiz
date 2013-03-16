@@ -15,6 +15,7 @@ c.execute('drop table if exists quiz')
 c.execute('drop table if exists quiz_submissions')
 c.execute('drop table if exists app_settings')
 c.execute('drop table if exists feedback')
+c.execute('drop table if exists analytics_queue')
 
 c.close()
 db.commit()
