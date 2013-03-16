@@ -55,7 +55,7 @@ try:
                     'submitted_date TIMESTAMP DEFAULT NOW()'
                     ')')
 
-    c.execute('CREATE TABLE analytics_queue (id SERIAL, event VARCHAR, properties TEXT)')
+    c.execute('CREATE TABLE analytics_queue (id SERIAL, data TEXT)')
 
 
     db.commit()
