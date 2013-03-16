@@ -98,15 +98,15 @@ def quiz(typee):
 
             # calculate streak bonus
             streakLength = database.calculate_streak_length(session['userId'], session['quizId'])
-            streakScore = 0 if streakLength < 3 else 3 + streakLength
-            score += streakScore
+            streakScore = 0 if streakLength < 3 else 5 + streakLength
             if streakScore != 0 and userAnswerCorrect:
+                score += streakScore
                 scoring.append('Streak of %d. %d bonus points!' % (streakLength, streakScore))
 
             database.quiz_answer(session['userId'], session['quizId'], previousAnswer, userAnswer, userAnswerCorrect, score)
 
 
-            scoring.append('Score so far: %d points!' % database.cumulative_quiz_score(session['quizId']))
+            scoring.append('Score: %d points!' % database.cumulative_quiz_score(session['quizId']))
             analytics.track('quiz_answer', {'user': session['userId'], 'quiz':session['quizId'], 'correct':userAnswerCorrect})
             if userAnswerCorrect:
                correctlyAnswered += 1
@@ -132,6 +132,7 @@ def quiz(typee):
 
         oldHighScore = database.fetch_user_score(session['userId'], difficulty)
         oldLeaderboardPosition = database.fetch_user_rank(session['userId'], difficulty)
+        score = database.quiz_complete(difficulty, session['quizId'], correctlyAnswered, numberAnswered)
         newLeaderboardPosition = database.fetch_user_rank(session['userId'], difficulty)
         leaderboardJump = None
         if oldLeaderboardPosition is not None and newLeaderboardPosition is not None:
