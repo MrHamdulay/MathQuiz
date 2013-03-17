@@ -11,7 +11,11 @@ try:
         if i % 1000 == 0:
             print i
         user_id = i*2+40
-        c.execute('insert into users (username, mxit_userid) values ( %s, %s)', ('abc%d'%i, user_id))
+        username='abc%d'%i
+        c.execute('insert into users (username, mxit_userid) values ( %s, %s)', (username, user_id))
+        db.commit()
+        c.execute('select id from users where username = %s', (username, ))
+        user_id = c.fetchone()[0]
         for d in range(2):
             if randint(0, 10) > 7:
                 break
