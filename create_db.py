@@ -15,7 +15,8 @@ try:
                 'joined_date timestamp DEFAULT NOW()'
                 ')')
     c.execute('CREATE TABLE users_highscores ('
-                'userid SERIAL,'
+                'id SERIAL,'
+                'userid INTEGER,'
                 'difficulty INTEGER,'
                 'highscore INTEGER NOT NULL DEFAULT 0'
                 ')')

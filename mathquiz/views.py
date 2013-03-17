@@ -39,6 +39,7 @@ def set_difficulty(difficulty=None):
 
 @app.route('/')
 def index():
+    print session['userId']
     session['quizId'] = -1
     analytics.track('page', {'page':'index'})
 
@@ -201,6 +202,7 @@ def leaderboard(difficulty, page):
             page=page,
             lastPage=(page==leaderboardPages),
             leaderboard=leaderboard,
+            difficulty=difficulty,
             userPosition=userPosition)
 
 

@@ -150,7 +150,7 @@ def leaderboard(page, difficulty):
     print difficulty
     c = g.database.cursor()
 
-    c.execute('select username, highscore, users.id from users_highscores, users where users_highscores.difficulty=%s and userid=id ORDER BY highscore DESC OFFSET %s LIMIT 10', (difficulty, page*10));
+    c.execute('select username, highscore, users.id from users_highscores, users where users_highscores.difficulty=%s and userid=users.id ORDER BY highscore DESC OFFSET %s LIMIT 10', (difficulty, page*10));
     result = c.fetchall()
     c.close()
 
@@ -162,7 +162,7 @@ def leaderboard_size(difficulty):
 
     c = g.database.cursor()
 
-    c.execute('SELECT count(*) FROM users_highscores WHERE highscore > 0 AND difficulty = %s', (difficulty, ))
+    c.execute('SELECT count(userid) FROM users_highscores WHERE difficulty = %s', (difficulty, ))
     size = c.fetchone()[0]
     c.close()
 
