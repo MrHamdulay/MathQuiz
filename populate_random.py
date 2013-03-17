@@ -10,7 +10,16 @@ try:
     for i in xrange(0, 100):
         if i % 1000 == 0:
             print i
-        c.execute('insert into users (username, mxit_userid, score) values (%s, %s, %s)', ('abc%d'%i, i*2+40, (i) % 1001))
+        user_id = i*2+40
+        username='abc%d'%i
+        c.execute('insert into users (username, mxit_userid) values ( %s, %s)', (username, user_id))
+        db.commit()
+        c.execute('select id from users where username = %s', (username, ))
+        user_id = c.fetchone()[0]
+        for d in range(2):
+            if randint(0, 10) > 7:
+                break
+            c.execute('insert into users_highscores (userid, difficulty, highscore) values (%s, %s, %s)', (user_id, d, i*21 % 101))
     c.close()
 finally:
     db.commit()
