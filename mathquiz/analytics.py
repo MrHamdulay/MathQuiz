@@ -24,7 +24,7 @@ if config.mixpanel_enabled:
         properties['mp_name_tag'] = session['username']
         properties['time'] = int(time())
         if 'X-Forwarded-For' in request.headers:
-            properties['ip'] = request.headers['']
+            properties['ip'] = request.headers['X-Forwarded-For']
 
         if "token" not in properties:
             properties["token"] = token
