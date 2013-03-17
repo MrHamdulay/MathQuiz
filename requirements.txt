@@ -3,9 +3,7 @@ Jinja2==2.6
 Werkzeug==0.8.3
 blinker==1.2
 httplib2==0.8
-ipython==0.13.1
 psycopg2==2.4.6
-pyga==0.1.2b
 raven==3.1.17
 requests==1.1.0
 simplejson==3.1.0

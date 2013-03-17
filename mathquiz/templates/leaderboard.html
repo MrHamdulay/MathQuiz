@@ -9,6 +9,9 @@
             There isn't anyone on the leaderboard! Be the first and make your mark!
             {% endfor %}
         </p>
+        {% if userPosition %}
+        <p><b>{{userPosition[0]}}</b> <a href="/user/profile/{{userPosition[1]}}">You</a> ({{userPosition[2]}})</p>
+        {% endif %}
         <p>
             {% if not lastPage %}
             <a href="/leaderboard/{{difficulty}}/{{ page + 1}}">Next</a>

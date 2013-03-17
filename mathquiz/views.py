@@ -188,6 +188,11 @@ def leaderboard(difficulty, page):
         page = 0
     analytics.track('page', {'page':'leaderboard-%s'%difficulty})
     leaderboard=database.leaderboard(page, difficulty)
+    userPosition=None
+    if sum(1 for x in leaderboard if x[2] == session['userId']) == 0:
+        userPosition = (database.fetch_user_rank(session['userId'], difficulty),
+                session['userId'],
+                database.fetch_user_score(session['userId'], difficulty))
 
     leaderboardSize = database.leaderboard_size(difficulty)
     leaderboardPages = leaderboardSize / 10
@@ -195,7 +200,8 @@ def leaderboard(difficulty, page):
     return render_template('leaderboard.html',
             page=page,
             lastPage=(page==leaderboardPages),
-            leaderboard=leaderboard)
+            leaderboard=leaderboard,
+            userPosition=userPosition)
 
 
 @app.route('/user/profile/<int:user_id>')

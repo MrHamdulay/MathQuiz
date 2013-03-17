@@ -67,7 +67,7 @@ def create_user():
 
 def fetch_user_score(user_id, difficulty):
     if isinstance(difficulty, basestring):
-        difficulty = question.Difficulties.index(difficulty)
+        difficulty = question.Difficulties.index(difficulty.upper())
 
     c = g.database.cursor()
     c.execute('SELECT highscore FROM users_highscores WHERE userid = %s AND difficulty = %s', (user_id, difficulty))
@@ -185,7 +185,7 @@ def fetch_user_rank(user_id, difficulty):
     row = c.fetchone()
     c.close()
 
-    return int(row[0]) if row is not None else row
+    return int(row[0]) if row is not None else leaderboard_size(difficulty)+1
 
 def fetch_number_users():
     c = g.database.cursor()
