@@ -10,6 +10,8 @@ import question
 import database
 import analytics
 
+QUIZ_TIME = 45
+
 @app.route('/feedback', methods=('post', 'get'))
 def feedback():
     if 'feedback' in request.form:
@@ -80,12 +82,12 @@ def quiz(typee):
 
     # number of questions remaining in quiz
     # if we still have to ask questions of the user
-    timeRemaining = 30 - (time() - startTime)
+    timeRemaining = QUIZ_TIME - (time() - startTime)
 
     if 'quizId' not in session or session['quizId'] == -1:
         quizId = session['quizId'] = database.create_quiz(type)
         startTime = session['startTime'] = time()
-        timeRemaining = 30
+        timeRemaining = QUIZ_TIME
         correctlyAnswered = session['correctlyAnswered'] = 0
         incorrectlyAnswered = session['incorrectlyAnswered'] = 0
 
