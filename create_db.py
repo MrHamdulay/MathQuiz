@@ -17,7 +17,7 @@ try:
     c.execute('CREATE TABLE users_highscores ('
                 'id SERIAL,'
                 'userid INTEGER,'
-                'difficulty INTEGER,'
+                'difficulty INTEGER,' # add ten for streak stuff
                 'highscore INTEGER NOT NULL DEFAULT 0'
                 ')')
     c.execute('CREATE UNIQUE INDEX highscores ON users_highscores (userid, difficulty)')

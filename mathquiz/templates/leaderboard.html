@@ -21,9 +21,11 @@
             {% endif %}
         </p>
         <p>
-            <a href="/leaderboard/easy">Easy</a>
-            <a href="/leaderboard/medium">Medium</a>
-            <a href="/leaderboard/hard">Hard</a>
+        {% for type in ('easy', 'medium', 'hard') %}
+        {% if type == difficulty %}<i>{% endif %}
+        <a href="/leaderboard/{{ type }}">{{ type.title() }}</a>
+        {% if type == difficulty %}</i>{% endif %}
+        {% endfor %}
         </p>
 
             <a href="/">Home</a> 
