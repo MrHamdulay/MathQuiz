@@ -3,7 +3,8 @@ import random
 class Enum(list):
     def __getattr__(self, name):
         if isinstance(name , int):
-            return list.__getitem__(self, name)
+            res = list.__getitem__(self, name)
+            return res
         if name in self:
             return name
         raise AttributeError

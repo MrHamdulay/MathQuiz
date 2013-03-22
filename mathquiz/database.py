@@ -128,7 +128,9 @@ def quiz_complete(difficulty, quiz_id, num_correct, num_questions):
 
     return score
 
-def calculate_streak_length(user_id, cur_quiz_id):
+def calculate_streak_length(user_id, cur_quiz_id, difficulty):
+    if isinstance(difficulty, basestring):
+        difficulty = question.Difficulties.index(difficulty.upper())
     c = g.database.cursor()
     c.execute('SELECT correct, quiz_id FROM quiz_submissions WHERE user_id = %s ORDER BY submit_time DESC LIMIT 10', (user_id, ))
 
@@ -139,7 +141,14 @@ def calculate_streak_length(user_id, cur_quiz_id):
             break
         streakLength += 1
 
+    try:
+        c.execute('INSERT INTO users_highscores (userid, difficulty, highscore) VALUES (%s, %s, %s)', (user_id, difficulty+10, streakLength))
+    except psycopg2.IntegrityError:
+        g.database.rollback()
+        c.execute('UPDATE users_highscores SET highscore = GREATEST(highscore, %s) WHERE userid = %s AND difficulty = %s', (streakLength, user_id, difficulty+10))
+
     c.close()
+    g.database.commit()
 
     return streakLength
 

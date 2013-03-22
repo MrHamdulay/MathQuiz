@@ -14,20 +14,27 @@
         {% endif %}
         <p>
             {% if not lastPage %}
-            <a href="/leaderboard/{{difficulty}}/{{ page + 1}}">Next</a>
+            <a href="/leaderboard/{{scoring}}/{{difficulty}}/{{ page + 1}}">Next</a>
             {% endif %}
             {% if page != 0 %}
-            <a href="/leaderboard/{{difficulty}}/{{ page - 1}}">Previous</a>
+            <a href="/leaderboard/{{scoring}}/{{difficulty}}/{{ page - 1}}">Previous</a>
             {% endif %}
         </p>
         <p>
         {% for type in ('easy', 'medium', 'hard') %}
-        {% if type == difficulty %}<i>{% endif %}
-        <a href="/leaderboard/{{ type }}">{{ type.title() }}</a>
-        {% if type == difficulty %}</i>{% endif %}
+            {% if type == difficulty %}<i>{% endif %}
+                <a href="/leaderboard/{{ scoring }}/{{ type }}">{{ type.title() }}</a>
+            {% if type == difficulty %}</i>{% endif %}
         {% endfor %}
         </p>
-
+        <p>
+            Scoring type: 
+            {% for type in ('points', 'streak') %}
+            {% if scoring == type %}<i>{% endif %}
+            <a href="/leaderboard/{{ type }}/{{ difficulty }}">{{type.title() }}</a>
+            {% if scoring == type %}</i>{% endif %}
+            {% endfor %}
+        </p>
             <a href="/">Home</a> 
     </body>
 </html>

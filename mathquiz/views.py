@@ -102,7 +102,7 @@ def quiz(typee):
             score = question.score(type, difficulty, userAnswerCorrect)
 
             # calculate streak bonus
-            streakLength = database.calculate_streak_length(session['userId'], session['quizId'])
+            streakLength = database.calculate_streak_length(session['userId'], session['quizId'], difficulty)
             streakScore = 0 if streakLength < 3 else 3 + streakLength
             if streakScore != 0 and userAnswerCorrect:
                 score += streakScore
@@ -181,14 +181,22 @@ def quiz(typee):
 
 @app.route('/leaderboard')
 def redirect_leaderboard():
-    return redirect('/leaderboard/%s' % (session['difficulty'].lower()))
+    return redirect('/leaderboard/points/%s' % (session['difficulty'].lower()))
 
-@app.route('/leaderboard/<difficulty>', defaults={'page': 0})
-@app.route('/leaderboard/<difficulty>/<int:page>')
-def leaderboard(difficulty, page):
+@app.route('/leaderboard/<scoring>/<difficulty>', defaults={'page': 0})
+@app.route('/leaderboard/<scoring>/<difficulty>/<int:page>')
+def leaderboard(difficulty, scoring, page):
     if page < 0:
         page = 0
-    analytics.track('page', {'page':'leaderboard-%s'%difficulty})
+    analytics.track('page', {'page':'leaderboard-%s-%s'%(scoring, difficulty)})
+
+    try:
+        difficulty = int(difficulty)
+    except ValueError:
+        difficulty = question.Difficulties.index(difficulty.upper())
+
+    if scoring == 'streak':
+        difficulty += 10
     leaderboard=database.leaderboard(page, difficulty)
     userPosition=None
     if sum(1 for x in leaderboard if x[2] == session['userId']) == 0:
@@ -201,9 +209,10 @@ def leaderboard(difficulty, page):
 
     return render_template('leaderboard.html',
             page=page,
+            scoring=scoring,
             lastPage=(page==leaderboardPages),
             leaderboard=leaderboard,
-            difficulty=difficulty,
+            difficulty=difficulty%10,
             userPosition=userPosition)
 
 
