@@ -29,9 +29,12 @@ try:
         c.execute('DELETE FROM analytics_queue')
 
         db.commit()
+        if not db.notifies:
+            print 'Notification list empty. Sleeping.'
         # while db has not notified yet
         while not db.notifies:
-            print 'Notification list empty. Sleeping.'
+            sys.stdout.write('.')
+            sys.stdout.flush()
             sleep(3)
             db.poll()
 
