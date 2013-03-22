@@ -10,7 +10,7 @@ import question
 import database
 import analytics
 
-QUIZ_TIME = 45
+QUIZ_TIME = 60
 
 @app.route('/feedback', methods=('post', 'get'))
 def feedback():
