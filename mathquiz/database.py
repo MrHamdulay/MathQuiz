@@ -120,8 +120,8 @@ def quiz_complete(difficulty, quiz_id, num_correct, num_questions):
     except psycopg2.IntegrityError:
         g.database.rollback()
         # update existing high score
-        c.execute('UPDATE users_highscores SET highscore = GREATEST(highscore, %s) WHERE userid = %s',
-                (score, session['userId']))
+        c.execute('UPDATE users_highscores SET highscore = GREATEST(highscore, %s) WHERE userid = %s AND difficulty = %s',
+                (score, session['userId'], difficulty))
     c.close()
 
     g.database.commit()
