@@ -158,6 +158,7 @@ def quiz(typee):
                     newDifficulty = question.Difficulties[newDifficultyIndex].lower()
                     analytics.track('difficulty_increased', {'new_difficulty':newDifficulty})
                     database.set_user_difficulty(session['userId'], newDifficultyIndex)
+                    session['difficulty'] = question.Difficulties[newDifficultyIndex]
                 else:
                     flash('You are good enough at this section to be on another level. Show us your skills at Badass mode to level up')
 
