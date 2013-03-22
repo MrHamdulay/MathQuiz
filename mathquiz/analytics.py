@@ -16,6 +16,8 @@ def google_track():
 
 if config.mixpanel_enabled:
     def track(event, properties=None):
+        if session['username'] == 'Yasen':
+            return
         if properties == None:
             properties = {}
 
