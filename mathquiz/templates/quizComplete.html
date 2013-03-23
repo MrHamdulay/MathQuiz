@@ -20,15 +20,15 @@
         <p style="color: rgb(10, 210, 0);">{{ newDifficulty }} difficulty level attained! Click on 'change
         difficulty' on the home page to update.</p>
         {% endif %}
+        {% if leaderboardJump > 0 %}
+        <p style="color:rgb(178, 34, 34)">You jumped up the leaderboard by {{ leaderboardJump }} positions!</p>
+        {% endif %}
         Time's up!<br />
         {% if score > oldHighScore %}
         New high score!<br />
         {% endif %}
         You got {{ numberCorrect }} correct out of {{ total }}.<br />
         Final score: {{ score }} ! <br />
-        {% if leaderboardJump > 0 %}
-        You jumped up the leaderboard by {{ leaderboardJump }} positions!
-        {% endif %}
         <a href="/">Home</a>
     </body>
 </html>

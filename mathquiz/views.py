@@ -141,7 +141,7 @@ def quiz(typee):
         newLeaderboardPosition = database.fetch_user_rank(session['userId'], difficulty)
         leaderboardJump = None
         if oldLeaderboardPosition is not None and newLeaderboardPosition is not None:
-            leadboardJump = newLeaderboardPosition - oldLeaderboardPosition
+            leaderboardJump =  oldLeaderboardPosition - newLeaderboardPosition
 
         analytics.track('quiz_completed', {'distinct_id':session['userId'], 'quiz':session['quizId'], 'score':score})
         # reset quiz
@@ -162,6 +162,7 @@ def quiz(typee):
                 else:
                     flash('You are good enough at this section to be on another level. Show us your skills at Badass mode to level up')
 
+        print leaderboardJump
 
         response = make_response(render_template('quizComplete.html',
             correct=userAnswerCorrect,
