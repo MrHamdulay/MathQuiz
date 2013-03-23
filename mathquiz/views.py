@@ -75,7 +75,6 @@ def quiz(typee):
     except KeyError:
         # force a new quiz
         session['quizId'] = -1
-        analytics.track('new_quiz')
 
     previousAnswer, userAnswer, userAnswerCorrect = None, None, None
     scoring = []
@@ -91,6 +90,7 @@ def quiz(typee):
         timeRemaining = QUIZ_TIME
         correctlyAnswered = session['correctlyAnswered'] = 0
         incorrectlyAnswered = session['incorrectlyAnswered'] = 0
+        analytics.track('new_quiz')
 
     elif timeRemaining >= 0:
         # if we have already started the quiz
