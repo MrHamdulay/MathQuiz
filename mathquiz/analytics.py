@@ -23,7 +23,7 @@ if config.mixpanel_enabled:
 
         token = config.mixpanel_token
         properties['distinct_id'] = session['userId']
-        properties['mp_name_tag'] = session['username']
+        properties['username'] = properties['mp_name_tag'] = session['username']
         properties['time'] = int(time())
         if 'X-Forwarded-For' in request.headers:
             properties['ip'] = request.headers['X-Forwarded-For']
