@@ -26,8 +26,7 @@ if __name__ == '__main__':
 
 
     for username, userid in c:
-        message.replace('<user>', username)
-        r = api.send_message(userid, message)
+        r = api.send_message(userid, message.replace('<user>', username))
         print 'OK' if r.ok else 'FAILURE', username
 
     c.close()
