@@ -7,22 +7,27 @@ from mathquiz import app, config, SCHEMA_VERSION, question
 from mathquiz.question import Question
 
 @app.before_request
+def initialise():
+    g.database = create_database()
+
+    #make sure we have a user object in the database for this connection
+    create_user()
+
 def create_database():
-    g.database = psycopg2.connect('user=%s password=%s' % (config.database_user, config.database_password))
+    database = psycopg2.connect('user=%s password=%s' % (config.database_user, config.database_password))
 
     # ensure schema versions are equal
-    c = g.database.cursor()
+    c = database.cursor()
     c.execute("SELECT value FROM app_settings WHERE key = 'schema_version'")
     db_schema_version = c.fetchone()[0]
     c.close()
 
-    g.database.commit()
+    database.commit()
 
     if str(SCHEMA_VERSION) != db_schema_version:
         raise Exception('Database schema version not the same as app version, UPGRADE')
+    return database
 
-    #make sure we have a user object in the database for this connection
-    create_user()
 
 @app.teardown_request
 def close_database(request):
