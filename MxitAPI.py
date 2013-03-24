@@ -9,7 +9,7 @@ apiUrl = 'http://api.mxit.com'
 
 class ForbiddenException(Exception): pass
 
-class MxitApi:
+class MxitAPI:
     scopes = []
     access_token = None
     expiration_time = None
