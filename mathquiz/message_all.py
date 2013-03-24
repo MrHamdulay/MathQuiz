@@ -20,12 +20,14 @@ if __name__ == '__main__':
     elif i[0] == 'a':
         c.execute('SELECT username, mxit_userid FROM users')
 
-    message = raw_input('Enter message you wish to send to users: ')
+    message = None
+    with open(raw_input('Enter path of message you wanna send:'), 'r') as f:
+        message = f.read()
 
-    users = [userid for username, userid in c]
 
-    r = api.send_message(users, message)
-    print r
-    print r.text
+    for username, userid in c:
+        message.replace('<user>', username)
+        r = api.send_message(userid, message)
+        print 'OK' if r.ok else 'FAILURE', username
 
     c.close()
