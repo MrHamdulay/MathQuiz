@@ -101,7 +101,7 @@ def generateMultDiv(difficulty):
             first = random.randint(-12, 12)
             if first == 0:
                 first = 1
-            second = random.randint(-80/first, 80/first)
+            second = random.randint(min(-80/first, 80/first), min(-80/first, 80/first))
 
     return Question(first, operation, second)
 
