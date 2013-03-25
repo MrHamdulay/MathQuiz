@@ -9,7 +9,6 @@ from time import time
 from mathquiz import app, config
 
 def add_analytics_db(event, properties):
-    print 'adding to queue'
     c = g.database.cursor()
     params = simplejson.dumps({'event':event, 'properties':properties})
     c.execute('INSERT INTO analytics_queue (data) values (%s)', (params, ))
@@ -24,7 +23,6 @@ def google_track():
         tracker.track(request, session, str(session['userId']))
 
 if config.mixpanel_enabled:
-    print 'tracking'
     def track(event, properties=None):
         if session['username'] == 'Yasen':
             return
@@ -41,11 +39,9 @@ if config.mixpanel_enabled:
         if "token" not in properties:
             properties["token"] = token
 
-        print event, properties
         add_analytics_db(event, properties)
 
 else:
-    print 'not tracking'
     def track(*args):
         print 'not tracking. mixpanel disabled', args
         pass
