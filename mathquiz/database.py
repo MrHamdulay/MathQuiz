@@ -3,7 +3,7 @@ import psycopg2
 from flask import g, request, session
 import simplejson
 
-from mathquiz import app, config, SCHEMA_VERSION, question
+from mathquiz import app, config, SCHEMA_VERSION, question, analytics
 from mathquiz.question import Question
 
 @app.before_request
@@ -53,12 +53,14 @@ def create_user():
         mxit_user_id = -1 # development id
         mxit_nick = 'Yasen'
     c = g.database.cursor()
+    newUser = False
     try:
         c.execute('INSERT INTO users (mxit_userid, username, joined_date) VALUES (%s, %s, NOW())', (mxit_user_id, mxit_nick))
         c.execute('SELECT lastval()')
         session['userId'] = c.fetchone()[0]
         session['difficulty'] = 'easy'
         session['username'] = mxit_nick
+        newUser = True
         g.database.commit()
     except psycopg2.IntegrityError:
         g.database.rollback()
@@ -69,6 +71,9 @@ def create_user():
         c.close()
 
     g.database.commit()
+
+    if newUser:
+        analytics.track('new-user')
 
 def fetch_user_score(user_id, difficulty):
     if isinstance(difficulty, basestring):
@@ -262,11 +267,3 @@ def fetch_user_difficulty(user_id):
     c.close()
 
     return question.Difficulties[difficulty]
-
-def add_analytics(event, properties):
-    c = g.database.cursor()
-    params = simplejson.dumps({'event':event, 'properties':properties})
-    c.execute('INSERT INTO analytics_queue (data) values (%s)', (params, ))
-    c.execute('NOTIFY analytics')
-    c.close()
-    g.database.commit()

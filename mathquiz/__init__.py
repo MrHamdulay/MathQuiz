@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, g
 
 SCHEMA_VERSION = 10
 import config
