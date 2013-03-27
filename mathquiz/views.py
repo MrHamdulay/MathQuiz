@@ -90,7 +90,7 @@ def quiz(typee):
         timeRemaining = QUIZ_TIME
         correctlyAnswered = session['correctlyAnswered'] = 0
         incorrectlyAnswered = session['incorrectlyAnswered'] = 0
-        analytics.track('new_quiz')
+        analytics.track('new_quiz', {'quiz_type': question.Types[typee.upper()]})
 
     elif timeRemaining >= 0:
         # if we have already started the quiz
