@@ -149,7 +149,7 @@ def quiz(typee):
 
         newDifficulty = False
         # if user answered > 80% of answers correctly and answered > 10 correctly increase difficulty level
-        if numberAnswered >= 8 and (float(correctlyAnswered) / numberAnswered) > 0.8:
+        if numberAnswered >= 5 and (float(correctlyAnswered) / numberAnswered) >= 0.8:
             newDifficultyIndex = question.Difficulties.index(session['difficulty'].upper())+1
             # don't go over max difficulty (hard)
             if newDifficultyIndex < len(question.Difficulties) \

@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-virtualenv venv
+virtualenv-2.7 -p /usr/bin/python2.7 venv
 . venv/bin/activate
 git pull origin master
 
