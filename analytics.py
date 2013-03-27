@@ -35,7 +35,7 @@ try:
         while not db.notifies:
             sys.stdout.write('.')
             sys.stdout.flush()
-            sleep(3)
+            sleep(1)
             db.poll()
 
         db.notifies[:] = []
