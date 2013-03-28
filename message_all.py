@@ -22,14 +22,18 @@ def main():
             print 'Give one of file or message not both'
             return
 
-        message = args.message
+        message = None
         if args.file:
             message = args.file.read()
             args.file.close()
-
+        elif args.message:
+            message = args.message[0]
+        if message is None:
+            print 'No message to send'
+            return
 
         if args.to == 'user' and args.user:
-            c.execute('SELECT username, mxit_userid FROM users WHERE mxit_userid = %s or username = %s', (args.user, args.user))
+            c.execute('SELECT username, mxit_userid FROM users WHERE mxit_userid = %s or username = %s', (args.user[0], args.user[0]))
         elif args.to == 'all':
             c.execute('SELECT username, mxit_userid FROM users')
         else:
@@ -42,9 +46,8 @@ def main():
         print 'connected'
 
         for username, userid in c:
-            print username
-            #r = api.send_message(userid, message.replace('<user>', username))
-            #print 'OK' if r.ok else 'FAILURE', username
+            r = api.send_message(userid, message.replace('<user>', username))
+            print 'OK' if r.ok else 'FAILURE', username
 
     finally:
         c.close()
