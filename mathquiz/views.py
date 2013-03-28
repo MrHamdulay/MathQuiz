@@ -25,24 +25,6 @@ def set_difficulty(difficulty=None):
     else:
         return 'unknown difficulty'
 
-@app.route('/')
-def index():
-    print session['userId']
-    session['quizId'] = -1
-    analytics.track('page', {'page':'index'})
-
-
-    # if the user has not given us a username we should probably ask for one
-    return render_template('index.html',
-            username=session['username'],
-            userId=session['userId'],
-            current_difficulty=session['difficulty'].title(),
-            actual_difficulty=database.fetch_user_difficulty(session['userId']).title(),
-            rank=database.fetch_user_rank(session['userId'], session['difficulty']),
-            total_users=database.fetch_number_users()
-        )
-
-
 @app.route('/quiz/<typee>', methods=('get', 'post'))
 def quiz(typee):
     #convert string types to internal enums
