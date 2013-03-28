@@ -2,7 +2,7 @@
 <html>
     <body>
 <mxit:advert auid="393210" />
-        <p><b>Leaderboard</b></p>
+        <p><b>Leaderboard -  {{ difficultyName | title }}</b></p>
         <p>
             {% for user in leaderboard %}
             <b> {{ loop.index  + page*10 }}) </b> <a href="/user/profile/{{user[2]}}">{{ user[0] }}</a> ({{ user[1] }}) <br /> 

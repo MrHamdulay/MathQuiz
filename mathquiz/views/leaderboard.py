@@ -31,6 +31,7 @@ def leaderboard(difficulty, scoring, page):
             lastPage=(page==leaderboardPages),
             leaderboard=leaderboard,
             difficulty=difficulty%10,
+            difficultyName = question.Difficulties[difficulty%10],
             userPosition=userPosition)
 
 @app.route('/leaderboard')
