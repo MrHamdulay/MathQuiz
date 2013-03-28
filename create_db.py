@@ -44,6 +44,7 @@ try:
                 'submit_time TIMESTAMP DEFAULT NOW()'
                 ')') #user given answer, not necessarily correct
     c.execute('CREATE INDEX streak ON quiz_submissions (user_id, submit_time, correct)')
+    c.execute('CREATE index quiz_submissions_by_id ON quiz_submissions (quiz_id)')
 
     c.execute('CREATE TABLE app_settings ('
                 'key VARCHAR, '
