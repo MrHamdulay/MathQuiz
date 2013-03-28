@@ -1,4 +1,4 @@
-from flask import render_template, session
+from flask import render_template, session, redirect
 from mathquiz import app, analytics, database, question
 
 @app.route('/leaderboard/<scoring>/<difficulty>', defaults={'page': 0})
