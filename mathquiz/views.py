@@ -149,7 +149,3 @@ def quiz(typee):
     session['incorrectlyAnswered'] = incorrectlyAnswered
 
     return response
-
-@app.route('/leaderboard')
-def redirect_leaderboard():
-    return redirect('/leaderboard/points/%s' % (session['difficulty'].lower()))

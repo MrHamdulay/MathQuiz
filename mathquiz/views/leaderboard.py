@@ -33,3 +33,6 @@ def leaderboard(difficulty, scoring, page):
             difficulty=difficulty%10,
             userPosition=userPosition)
 
+@app.route('/leaderboard')
+def redirect_leaderboard():
+    return redirect('/leaderboard/points/%s' % (session['difficulty'].lower()))
