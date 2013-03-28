@@ -1,4 +1,5 @@
 import psycopg2
+import redis
 
 from flask import g, request, session
 import simplejson
@@ -6,14 +7,17 @@ import simplejson
 from mathquiz import app, config, SCHEMA_VERSION, question, analytics
 from mathquiz.question import Question
 
+redis_connection_pool = redis.ConnectionPool(host=config.redis_host)
+
 @app.before_request
 def initialise():
-    g.database = create_database()
+    g.database = connect_postgres()
+    g.redis = connect_redis()
 
     #make sure we have a user object in the database for this connection
     create_user()
 
-def create_database():
+def connect_postgres():
     database = psycopg2.connect('user=%s password=%s' % (config.database_user, config.database_password))
 
     # ensure schema versions are equal
@@ -28,6 +32,9 @@ def create_database():
         raise Exception('Database schema version not the same as app version, UPGRADE')
     return database
 
+def connect_redis():
+    redis_connection = redis.Redis(connection_pool=redis_connection_pool)
+    return redis_connection
 
 @app.teardown_request
 def close_database(request):

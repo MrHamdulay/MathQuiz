@@ -18,9 +18,10 @@ def leaderboard(difficulty, scoring, page):
     leaderboard=database.leaderboard(page, difficulty)
     userPosition=None
     if sum(1 for x in leaderboard if x[2] == session['userId']) == 0:
-        userPosition = (database.fetch_user_rank(session['userId'], difficulty),
-                session['userId'],
-                database.fetch_user_score(session['userId'], difficulty))
+        userPosition = (
+            database.fetch_user_rank(session['userId'], difficulty),
+            session['userId'],
+            database.fetch_user_score(session['userId'], difficulty))
 
     leaderboardSize = database.leaderboard_size(difficulty)
     leaderboardPages = leaderboardSize / 10
