@@ -2,12 +2,11 @@ import psycopg2
 import redis
 
 from flask import g, request, session
-import simplejson
 
 from mathquiz import app, config, SCHEMA_VERSION, question, analytics
-from mathquiz.question import Question
 
 redis_connection_pool = redis.ConnectionPool(host=config.redis_host)
+
 
 @app.before_request
 def initialise():
@@ -16,6 +15,7 @@ def initialise():
 
     #make sure we have a user object in the database for this connection
     create_user()
+
 
 def connect_postgres():
     database = psycopg2.connect('user=%s password=%s' % (config.database_user, config.database_password))
@@ -32,15 +32,18 @@ def connect_postgres():
         raise Exception('Database schema version not the same as app version, UPGRADE')
     return database
 
+
 def connect_redis():
     redis_connection = redis.Redis(connection_pool=redis_connection_pool)
     return redis_connection
+
 
 @app.teardown_request
 def close_database(request):
     g.database.commit()
     g.database.close()
     return request
+
 
 def set_user(mxit_user_id):
     try:
@@ -52,12 +55,13 @@ def set_user(mxit_user_id):
     finally:
         c.close()
 
+
 def create_user():
     try:
         mxit_user_id = request.headers['X-Mxit-Userid-R']
         mxit_nick = request.headers['X-Mxit-Nick']
     except KeyError:
-        mxit_user_id = -1 # development id
+        mxit_user_id = -1  # development id
         mxit_nick = 'Yasen'
     c = g.database.cursor()
     newUser = False
@@ -82,6 +86,7 @@ def create_user():
     if newUser:
         analytics.track('new-user')
 
+
 def fetch_user_score(user_id, difficulty):
     if isinstance(difficulty, basestring):
         difficulty = question.Difficulties.index(difficulty.upper())
@@ -93,12 +98,14 @@ def fetch_user_score(user_id, difficulty):
 
     return row[0] if row is not None else 0
 
+
 def quiz_answer(user_id, quiz_id, question, answer, correct, score):
     c = g.database.cursor()
     c.execute('INSERT INTO quiz_submissions (user_id, quiz_id, question, answer, correct, score) VALUES (%s, %s, %s, %s, %s, %s)', (user_id, quiz_id, str(question), answer, correct, score))
     c.close()
 
     g.database.commit()
+
 
 def cumulative_quiz_score(quiz_id):
     c = g.database.cursor()
@@ -107,6 +114,7 @@ def cumulative_quiz_score(quiz_id):
     c.close()
 
     return score
+
 
 def create_quiz(type):
     c = g.database.cursor()
@@ -120,6 +128,7 @@ def create_quiz(type):
 
     return quiz_id
 
+
 def quiz_complete(difficulty, quiz_id, num_correct, num_questions):
     if isinstance(difficulty, basestring):
         difficulty = question.Difficulties.index(difficulty)
@@ -128,22 +137,23 @@ def quiz_complete(difficulty, quiz_id, num_correct, num_questions):
     c = g.database.cursor()
     # update quiz score
     c.execute('UPDATE quiz SET end_time = NOW(), num_correct = %s, num_questions = %s, score =  %s WHERE id = %s',
-            (num_correct, num_questions, score, quiz_id))
+              (num_correct, num_questions, score, quiz_id))
     g.database.commit()
     try:
         # insert high score into table
         c.execute('INSERT INTO users_highscores (userid, difficulty, highscore) VALUES (%s, %s, %s)',
-                (session['userId'], difficulty, score))
+                 (session['userId'], difficulty, score))
     except psycopg2.IntegrityError:
         g.database.rollback()
         # update existing high score
         c.execute('UPDATE users_highscores SET highscore = GREATEST(highscore, %s) WHERE userid = %s AND difficulty = %s',
-                (score, session['userId'], difficulty))
+                 (score, session['userId'], difficulty))
     c.close()
 
     g.database.commit()
 
     return score
+
 
 def calculate_streak_length(user_id, cur_quiz_id, difficulty):
     if isinstance(difficulty, basestring):
@@ -176,11 +186,15 @@ def leaderboard(page, difficulty):
     print difficulty
     c = g.database.cursor()
 
-    c.execute('select username, highscore, users.id from users_highscores, users where users_highscores.difficulty=%s and userid=users.id ORDER BY highscore DESC OFFSET %s LIMIT 10', (difficulty, page*10));
+    c.execute('select username, highscore, users.id from users_highscores, users'
+              ' where users_highscores.difficulty=%s and userid=users.id'
+              ' ORDER BY highscore DESC OFFSET %s LIMIT 10',
+              (difficulty, page*10))
     result = c.fetchall()
     c.close()
 
     return result
+
 
 def leaderboard_size(difficulty):
     if isinstance(difficulty, basestring):
@@ -194,6 +208,7 @@ def leaderboard_size(difficulty):
 
     return size
 
+
 def username_exists(username):
     c = g.database.cursor()
     c.execute('SELECT count(*) FROM users WHERE username = %s', (username, ))
@@ -201,6 +216,7 @@ def username_exists(username):
     c.close()
 
     return count > 0
+
 
 def fetch_user_rank(user_id, difficulty):
     if isinstance(difficulty, basestring):
@@ -213,6 +229,7 @@ def fetch_user_rank(user_id, difficulty):
 
     return int(row[0]) if row is not None else leaderboard_size(difficulty)+1
 
+
 def fetch_number_users():
     c = g.database.cursor()
     c.execute('SELECT count(id) FROM users')
@@ -220,6 +237,7 @@ def fetch_number_users():
     c.close()
 
     return count
+
 
 def set_user_difficulty(user_id, difficulty):
     c = g.database.cursor()
@@ -230,10 +248,13 @@ def set_user_difficulty(user_id, difficulty):
 
 def submit_feedback(user_id, feedback):
     c = g.database.cursor()
-    c.execute('INSERT INTO feedback (username, userid, feedback) VALUES ((SELECT username FROM users WHERE id = %s), %s, %s)', (user_id, user_id, feedback))
+    c.execute('INSERT INTO feedback (username, userid, feedback) VALUES '
+              '((SELECT username FROM users WHERE id = %s), %s, %s)',
+              (user_id, user_id, feedback))
     c.close()
 
     g.database.commit()
+
 
 def fetch_user_games_started(user_id):
     c = g.database.cursor()
@@ -243,13 +264,16 @@ def fetch_user_games_started(user_id):
 
     return count
 
+
 def fetch_user_games_completed(user_id):
     c = g.database.cursor()
-    c.execute('SELECT count(*) FROM quiz WHERE user_id = %s AND end_time IS NOT NULL', (user_id, ))
+    c.execute('SELECT count(*) FROM quiz WHERE '
+              'user_id = %s AND end_time IS NOT NULL', (user_id, ))
     count = c.fetchone()[0]
     c.close()
 
     return count
+
 
 def fetch_user_joined_date(user_id):
     c = g.database.cursor()
@@ -259,6 +283,7 @@ def fetch_user_joined_date(user_id):
 
     return joined_date
 
+
 def fetch_user_name(user_id):
     c = g.database.cursor()
     c.execute('SELECT username FROM users WHERE id = %s', (user_id, ))
@@ -266,6 +291,7 @@ def fetch_user_name(user_id):
     c.close()
 
     return username
+
 
 def fetch_user_difficulty(user_id):
     c = g.database.cursor()
