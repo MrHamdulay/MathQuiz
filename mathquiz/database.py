@@ -1,10 +1,8 @@
 import psycopg2
 
 from flask import g, request, session
-import simplejson
 
 from mathquiz import app, config, SCHEMA_VERSION, question, analytics
-from mathquiz.question import Question
 
 @app.before_request
 def initialise():
@@ -42,10 +40,13 @@ def set_user(mxit_user_id):
         session['userId'], session['username'], session['difficulty'] = c.fetchone()
         session['difficulty'] = question.Difficulties[session['difficulty']]
         session['version'] = SCHEMA_VERSION
+    except ValueError:
+        return False
     finally:
         c.close()
+    return True
 
-def create_user():
+def create_user(recursed=False):
     try:
         mxit_user_id = request.headers['X-Mxit-Userid-R']
         mxit_nick = request.headers['X-Mxit-Nick']
@@ -62,11 +63,15 @@ def create_user():
         session['username'] = mxit_nick
         newUser = True
         g.database.commit()
-    except psycopg2.IntegrityError:
+    except psycopg2.IntegrityError, e:
         g.database.rollback()
         # this isn't an error. We just don't check whether we've added this user before
         if 'userId' not in session or ('version' in session and session['version'] != SCHEMA_VERSION):
             set_user(mxit_user_id)
+        if 'userId' not in session and not recursed:
+            g.database.rollback()
+            create_user(True)
+
     finally:
         c.close()
 
