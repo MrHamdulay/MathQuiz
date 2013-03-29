@@ -1,7 +1,10 @@
-import sys
 import argparse
+import logging
 
+from raven.handlers.logging import SentryHandler
+from raven.conf import setup_logging
 from raven.contrib.flask import Sentry
+
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
@@ -16,7 +19,9 @@ if __name__ == '__main__':
     args.port = args.port[0]
 
     if config.sentry_enabled:
+        setup_logging(SentryHandler(config.sentry_dsn))
         sentry = Sentry(app, dsn=config.sentry_dsn)
+        logging.getLogger(__name__).error('Starting sentry')
 
     if args.dev:
         print 'Running in development mode'
@@ -26,4 +31,3 @@ if __name__ == '__main__':
         http_server = HTTPServer(WSGIContainer(app))
         http_server.listen(args.port)
         IOLoop.instance().start()
-

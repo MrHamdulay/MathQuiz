@@ -1,15 +1,22 @@
+import logging
 from flask import render_template, session
 
 from mathquiz import app, config
 from mathquiz.model import battleModel
-from mathquiz.MxitApi import MxitApi
+from MxitAPI import MxitAPI
 
 
+# opponent must be a user id
 def battle_notify(opponent, message):
-    mxitApi = MxitApi(config.client_id, config.secret_id, 'mathchallenge')
+    mxitApi = MxitAPI(config.client_id, config.secret_id, 'mathchallenge')
     mxitApi.auth(('message/send',))
 
-    mxitApi.sendMessage
+    r = mxitApi.sendMessage(opponent, message)
+
+    if not r.ok:
+        logging.error('MXit api error', r.text)
+
+    return r.ok
 
 
 def notify_opponent(opponent):
@@ -18,6 +25,7 @@ def notify_opponent(opponent):
 
 def notify_opponent_answer(opponent, answer):
     battle_notify(opponent, '%s: %s' % (session['username'], answer))
+
 
 @app.route('/battle/start/random')
 def battle_start():
