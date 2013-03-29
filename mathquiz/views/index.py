@@ -3,7 +3,6 @@ from mathquiz import app, analytics, database
 
 @app.route('/')
 def index():
-    print session['userId']
     session['quizId'] = -1
     analytics.track('page', {'page':'index'})
 
