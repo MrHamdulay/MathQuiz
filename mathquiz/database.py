@@ -40,7 +40,7 @@ def set_user(mxit_user_id):
         session['userId'], session['username'], session['difficulty'] = c.fetchone()
         session['difficulty'] = question.Difficulties[session['difficulty']]
         session['version'] = SCHEMA_VERSION
-    except ValueError:
+    except TypeError:
         return False
     finally:
         c.close()
