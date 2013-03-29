@@ -68,9 +68,12 @@ def create_user(recursed=False):
         # this isn't an error. We just don't check whether we've added this user before
         if 'userId' not in session or ('version' in session and session['version'] != SCHEMA_VERSION):
             set_user(mxit_user_id)
-        if 'userId' not in session and not recursed:
-            g.database.rollback()
-            create_user(True)
+        if 'userId' not in session:
+            if not recursed:
+                g.database.rollback()
+                create_user(True)
+            else:
+                raise Exception('Could not create a user for this person.')
 
     finally:
         c.close()
