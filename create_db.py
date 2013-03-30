@@ -21,6 +21,7 @@ try:
                 'highscore INTEGER NOT NULL DEFAULT 0'
                 ')')
     c.execute('CREATE UNIQUE INDEX highscores ON users_highscores (userid, difficulty)')
+    c.execute('create index highscores_by_difficulty on users_highscores (difficulty)')
 
     c.execute('CREATE TABLE quiz ('
                 'id SERIAL,'

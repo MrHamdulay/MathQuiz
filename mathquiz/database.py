@@ -47,6 +47,7 @@ def set_user(mxit_user_id):
     return True
 
 def create_user(recursed=False):
+    g.database.rollback()
     try:
         mxit_user_id = request.headers['X-Mxit-Userid-R']
         mxit_nick = request.headers['X-Mxit-Nick']
@@ -70,11 +71,9 @@ def create_user(recursed=False):
             set_user(mxit_user_id)
         if 'userId' not in session:
             if not recursed:
-                g.database.rollback()
                 create_user(True)
             else:
                 raise Exception('Could not create a user for this person.')
-
     finally:
         c.close()
 
