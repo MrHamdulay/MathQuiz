@@ -11,3 +11,7 @@ def find_opponent():
         g.redis.rpush(session['userId'])
 
     return opponentId
+
+
+def create_battle():
+    pass

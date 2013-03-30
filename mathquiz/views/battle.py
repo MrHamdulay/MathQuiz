@@ -31,9 +31,18 @@ def notify_opponent_answer(opponent, answer):
 def battle_start():
     opponent = battleModel.find_opponent()
 
+    # Couldn't find a suitable opponent, now we wait
     if opponent is None:
         return render_template('template/battle_waiting.html')
+    # An opponent has been found. Notify him / her
     else:
         notify_opponent(opponent)
 
+    # Generate a question
+
     return render_template('template/battle_start.html')
+
+
+@app.route('/battle/<int:battle>')
+def battle():
+    pass
