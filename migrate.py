@@ -24,7 +24,7 @@ def createMigrationsTable(db):
 def getDbMigrations(db):
     c = db.cursor()
     c.execute('SELECT name FROM migrations')
-    res = set(c)
+    res = set(row[0] for row in c)
     c.close()
 
     return res
