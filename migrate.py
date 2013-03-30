@@ -32,7 +32,7 @@ def getDbMigrations(db):
 
 def getFsMigrations():
     return set(filename for filename in os.listdir(MIGRATION_DIR)
-               if filename.endsWith('.sql'))
+               if filename.endswith('.sql'))
 
 
 if __name__ == '__main__':
@@ -58,7 +58,7 @@ if __name__ == '__main__':
         if dryRun:
             print '(not really)'
         else:
-            with open(migration) as f:
+            with open(MIGRATION_DIR+migration) as f:
                 c.execute(f.read())
                 c.execute('INSERT INTO migrations (name) VALUES (%s)',
                           (migration,))
