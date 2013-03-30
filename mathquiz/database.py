@@ -58,7 +58,6 @@ def set_user(mxit_user_id):
     return True
 
 
-def create_user():
 def create_user(recursed=False):
     g.database.rollback()
     try:
