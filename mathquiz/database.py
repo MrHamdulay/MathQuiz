@@ -57,9 +57,12 @@ def create_user(recursed=False):
     c = g.database.cursor()
     newUser = False
     try:
-        c.execute('INSERT INTO users (mxit_userid, username, joined_date) VALUES (%s, %s, NOW())', (mxit_user_id, mxit_nick))
-        c.execute('SELECT lastval()')
-        session['userId'] = c.fetchone()[0]
+        c.execute('SELECT max(id)+1 FROM users')
+        userid = c.fetchone()[0]
+        if not userid:
+            userid = 0
+        c.execute('INSERT INTO users (id, mxit_userid, username, joined_date) VALUES (%s, %s, %s, NOW())', (userid, mxit_user_id, mxit_nick))
+        session['userId'] = userid
         session['difficulty'] = 'easy'
         session['username'] = mxit_nick
         newUser = True
