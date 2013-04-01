@@ -4,12 +4,14 @@ from flask import g, request, session
 
 from mathquiz import app, config, SCHEMA_VERSION, question, analytics
 
+
 @app.before_request
 def initialise():
     g.database = create_database()
 
     #make sure we have a user object in the database for this connection
     create_user()
+
 
 def create_database():
     database = psycopg2.connect('user=%s password=%s' % (config.database_user, config.database_password))
@@ -33,6 +35,7 @@ def close_database(request):
     g.database.close()
     return request
 
+
 def set_user(mxit_user_id):
     try:
         c = g.database.cursor()
@@ -46,39 +49,32 @@ def set_user(mxit_user_id):
         c.close()
     return True
 
-def create_user(recursed=False):
+
+def create_user():
     g.database.rollback()
     try:
         mxit_user_id = request.headers['X-Mxit-Userid-R']
         mxit_nick = request.headers['X-Mxit-Nick']
     except KeyError:
-        mxit_user_id = -1 # development id
+        mxit_user_id = -1  # development id
         mxit_nick = 'Yasen'
-    c = g.database.cursor()
     newUser = False
-    try:
-        c.execute('SELECT max(id)+1 FROM users')
-        userid = c.fetchone()[0]
-        if not userid:
-            userid = 0
-        c.execute('INSERT INTO users (id, mxit_userid, username, joined_date) VALUES (%s, %s, %s, NOW())', (userid, mxit_user_id, mxit_nick))
-        session['userId'] = userid
-        session['difficulty'] = 'easy'
-        session['username'] = mxit_nick
-        newUser = True
-        g.database.commit()
-    except psycopg2.IntegrityError, e:
-        g.database.rollback()
-        # this isn't an error. We just don't check whether we've added this user before
-        if 'userId' not in session or ('version' in session and session['version'] != SCHEMA_VERSION):
-            set_user(mxit_user_id)
-        if 'userId' not in session:
-            if not recursed:
-                create_user(True)
-            else:
-                raise Exception('Could not create a user for this person.')
-    finally:
-        c.close()
+    haveUser = set_user(mxit_user_id)
+    if not haveUser:
+        try:
+            c = g.database.cursor()
+            c.execute('SELECT max(id)+1 FROM users')
+            userid = c.fetchone()[0]
+            if not userid:
+                userid = 0
+            c.execute('INSERT INTO users (id, mxit_userid, username, joined_date) VALUES (%s, %s, %s, NOW())', (userid, mxit_user_id, mxit_nick))
+            session['userId'] = userid
+            session['difficulty'] = 'easy'
+            session['username'] = mxit_nick
+            newUser = True
+            g.database.commit()
+        finally:
+            c.close()
 
     g.database.commit()
 
