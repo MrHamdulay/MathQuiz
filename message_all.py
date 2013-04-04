@@ -33,6 +33,7 @@ def main():
             return
 
         if args.to == 'user' and args.user:
+            print 'finding ', args.user
             c.execute('SELECT username, mxit_userid FROM users WHERE mxit_userid = %s or username = %s', (args.user[0], args.user[0]))
         elif args.to == 'all':
             c.execute('SELECT username, mxit_userid FROM users')
@@ -45,9 +46,15 @@ def main():
         api.auth(('message/send',))
         print 'connected'
 
-        for username, userid in c:
+        for i, (username, userid) in enumerate(c):
+            if username == 'Yasen':
+                continue
             r = api.send_message(userid, message.replace('<user>', username))
+            print i
             print 'OK' if r.ok else 'FAILURE', username
+            if not r.ok:
+                print r.text
+                break
 
     finally:
         c.close()
