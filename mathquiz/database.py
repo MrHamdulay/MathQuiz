@@ -40,8 +40,8 @@ def set_user(mxit_user_id):
     try:
         c = g.database.cursor()
         c.execute('SELECT id, username, difficulty FROM users WHERE mxit_userid = %s LIMIT 1', (str(mxit_user_id), ))
-        session['userId'], session['username'], session['difficulty'] = c.fetchone()
-        session['difficulty'] = question.Difficulties[session['difficulty']]
+        session['userId'], session['username'], difficulty = c.fetchone()
+        session['difficulty'] = question.Difficulties[session.get('difficulty', difficulty)]
         session['version'] = SCHEMA_VERSION
     except TypeError:
         return False
@@ -69,7 +69,7 @@ def create_user():
                 userid = 0
             c.execute('INSERT INTO users (id, mxit_userid, username, joined_date) VALUES (%s, %s, %s, NOW())', (userid, mxit_user_id, mxit_nick))
             session['userId'] = userid
-            session['difficulty'] = 'easy'
+            session['difficulty'] = session.get('difficulty', 'easy')
             session['username'] = mxit_nick
             newUser = True
             g.database.commit()
