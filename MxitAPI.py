@@ -2,15 +2,18 @@ import requests
 from requests.auth import HTTPBasicAuth
 import json
 from time import time
-import urllib
 
 authUrl = 'https://auth.mxit.com'
 apiUrl = 'http://api.mxit.com'
 
-class ForbiddenException(Exception): pass
+
+class ForbiddenException(Exception):
+    pass
+
 
 class MxitAPI:
     scopes = []
+    grant_type = 'client_credentials'
     access_token = None
     expiration_time = None
 
@@ -21,7 +24,7 @@ class MxitAPI:
 
     def auth(self, scopes, grant_type='client_credentials'):
         auth = HTTPBasicAuth(self.client_id, self.secret_id)
-        path='/token'
+        path = '/token'
 
         postData = 'grant_type=%s&scope=%s' % (grant_type, ' '.join(scopes))
 
@@ -32,17 +35,21 @@ class MxitAPI:
 
         auth_info = json.loads(response.text)
 
+        self.grant_type = grant_type
         self.token_type = auth_info['token_type']
         self.access_token = auth_info['access_token']
         self.scopes = auth_info['scope'].split(',')
-        self.expiration_time = time()+int(auth_info['expires_in'])
+        self.expiration_time = time()+int(auth_info['expires_in'])-1000
 
     def _api_call(self, resource, body=None):
+        if time() > self.expiration_time:
+            self.auth(self.scopes, self.grant_type)
+
         headers = {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Authorization': '%s %s' % (self.token_type.title(), self.access_token)
-            }
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': '%s %s' % (self.token_type.title(), self.access_token)
+        }
         function = requests.post if body is not None else requests.get
         print resource, body, headers, function
         return function(apiUrl+resource, data=body, headers=headers)
@@ -78,10 +85,10 @@ class MxitAPI:
         if time() > self.expiration_time:
             raise ForbiddenException('Token expired')
 
-if __name__== '__main__':
+if __name__ == '__main__':
     import config
-    api=MxitApi(config.client_id, config.secret_id, 'mathchallenge')
+    api = MxitAPI(config.client_id, config.secret_id, 'mathchallenge')
     api.auth(('message/send', ))
 
-    r=api.send_message('m47692421002', 'ola amigo')
+    r = api.send_message('m47692421002', 'ola amigo')
     print r
