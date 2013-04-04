@@ -41,7 +41,7 @@ def set_user(mxit_user_id):
         c = g.database.cursor()
         c.execute('SELECT id, username, difficulty FROM users WHERE mxit_userid = %s LIMIT 1', (str(mxit_user_id), ))
         session['userId'], session['username'], difficulty = c.fetchone()
-        session['difficulty'] = question.Difficulties[session.get('difficulty', difficulty)]
+        session['difficulty'] = session.get('difficulty', question.Difficulties[difficulty])
         session['version'] = SCHEMA_VERSION
     except TypeError:
         return False
