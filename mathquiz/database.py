@@ -148,7 +148,7 @@ def calculate_streak_length(user_id, cur_quiz_id, difficulty):
     if isinstance(difficulty, basestring):
         difficulty = question.Difficulties.index(difficulty.upper())
     c = g.database.cursor()
-    c.execute('SELECT correct, quiz_id FROM quiz_submissions WHERE user_id = %s ORDER BY submit_time DESC LIMIT 10', (user_id, ))
+    c.execute('SELECT correct, quiz_id FROM quiz_submissions WHERE user_id = %s ORDER BY submit_time DESC LIMIT 20', (user_id, ))
 
     streakLength = 0
     for correct, quiz_id in c:
