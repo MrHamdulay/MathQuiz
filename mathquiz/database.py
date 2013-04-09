@@ -81,6 +81,7 @@ def create_user():
     if newUser:
         analytics.track('new-user')
 
+
 def fetch_user_score(user_id, difficulty):
     if isinstance(difficulty, basestring):
         difficulty = question.Difficulties.index(difficulty.upper())
@@ -92,12 +93,14 @@ def fetch_user_score(user_id, difficulty):
 
     return row[0] if row is not None else 0
 
+
 def quiz_answer(user_id, quiz_id, question, answer, correct, score):
     c = g.database.cursor()
     c.execute('INSERT INTO quiz_submissions (user_id, quiz_id, question, answer, correct, score) VALUES (%s, %s, %s, %s, %s, %s)', (user_id, quiz_id, str(question), answer, correct, score))
     c.close()
 
     g.database.commit()
+
 
 def cumulative_quiz_score(quiz_id):
     c = g.database.cursor()
@@ -106,6 +109,7 @@ def cumulative_quiz_score(quiz_id):
     c.close()
 
     return score
+
 
 def create_quiz(type):
     c = g.database.cursor()
@@ -119,6 +123,7 @@ def create_quiz(type):
 
     return quiz_id
 
+
 def quiz_complete(difficulty, quiz_id, num_correct, num_questions):
     if isinstance(difficulty, basestring):
         difficulty = question.Difficulties.index(difficulty)
@@ -127,22 +132,23 @@ def quiz_complete(difficulty, quiz_id, num_correct, num_questions):
     c = g.database.cursor()
     # update quiz score
     c.execute('UPDATE quiz SET end_time = NOW(), num_correct = %s, num_questions = %s, score =  %s WHERE id = %s',
-            (num_correct, num_questions, score, quiz_id))
+             (num_correct, num_questions, score, quiz_id))
     g.database.commit()
     try:
         # insert high score into table
         c.execute('INSERT INTO users_highscores (userid, difficulty, highscore) VALUES (%s, %s, %s)',
-                (session['userId'], difficulty, score))
+                 (session['userId'], difficulty, score))
     except psycopg2.IntegrityError:
         g.database.rollback()
         # update existing high score
         c.execute('UPDATE users_highscores SET highscore = GREATEST(highscore, %s) WHERE userid = %s AND difficulty = %s',
-                (score, session['userId'], difficulty))
+                 (score, session['userId'], difficulty))
     c.close()
 
     g.database.commit()
 
     return score
+
 
 def calculate_streak_length(user_id, cur_quiz_id, difficulty):
     if isinstance(difficulty, basestring):
@@ -175,11 +181,14 @@ def leaderboard(page, difficulty):
     print difficulty
     c = g.database.cursor()
 
-    c.execute('select username, highscore, users.id from users_highscores, users where users_highscores.difficulty=%s and userid=users.id ORDER BY highscore DESC OFFSET %s LIMIT 10', (difficulty, page*10));
+    c.execute('select username, highscore, users.id from users_highscores, users'
+              ' where users_highscores.difficulty=%s and userid=users.id'
+              ' ORDER BY highscore DESC OFFSET %s LIMIT 10', (difficulty, page*10))
     result = c.fetchall()
     c.close()
 
     return result
+
 
 def leaderboard_size(difficulty):
     if isinstance(difficulty, basestring):
@@ -193,6 +202,7 @@ def leaderboard_size(difficulty):
 
     return size
 
+
 def username_exists(username):
     c = g.database.cursor()
     c.execute('SELECT count(*) FROM users WHERE username = %s', (username, ))
@@ -200,6 +210,7 @@ def username_exists(username):
     c.close()
 
     return count > 0
+
 
 def fetch_user_rank(user_id, difficulty):
     if isinstance(difficulty, basestring):
@@ -212,6 +223,7 @@ def fetch_user_rank(user_id, difficulty):
 
     return int(row[0]) if row is not None else leaderboard_size(difficulty)+1
 
+
 def fetch_number_users():
     c = g.database.cursor()
     c.execute('SELECT count(id) FROM users')
@@ -219,6 +231,7 @@ def fetch_number_users():
     c.close()
 
     return count
+
 
 def set_user_difficulty(user_id, difficulty):
     c = g.database.cursor()
@@ -234,6 +247,7 @@ def submit_feedback(user_id, feedback):
 
     g.database.commit()
 
+
 def fetch_user_games_started(user_id):
     c = g.database.cursor()
     c.execute('SELECT count(*) FROM quiz WHERE user_id = %s', (user_id, ))
@@ -241,6 +255,7 @@ def fetch_user_games_started(user_id):
     c.close()
 
     return count
+
 
 def fetch_user_games_completed(user_id):
     c = g.database.cursor()
@@ -250,6 +265,7 @@ def fetch_user_games_completed(user_id):
 
     return count
 
+
 def fetch_user_joined_date(user_id):
     c = g.database.cursor()
     c.execute('SELECT joined_date FROM users WHERE id = %s', (user_id, ))
@@ -258,6 +274,7 @@ def fetch_user_joined_date(user_id):
 
     return joined_date
 
+
 def fetch_user_name(user_id):
     c = g.database.cursor()
     c.execute('SELECT username FROM users WHERE id = %s', (user_id, ))
@@ -265,6 +282,7 @@ def fetch_user_name(user_id):
     c.close()
 
     return username
+
 
 def fetch_user_difficulty(user_id):
     c = g.database.cursor()
