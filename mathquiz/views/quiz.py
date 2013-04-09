@@ -6,6 +6,7 @@ from mathquiz import app, analytics, database, question
 
 QUIZ_TIME = 60
 
+
 @app.route('/quiz/<typee>', methods=('get', 'post'))
 def quiz(typee):
     #convert string types to internal enums
@@ -36,7 +37,7 @@ def quiz(typee):
     timeRemaining = QUIZ_TIME - (time() - startTime)
 
     if 'quizId' not in session or session['quizId'] == -1:
-        quizId = session['quizId'] = database.create_quiz(type)
+        session['quizId'] = database.create_quiz(type)
         startTime = session['startTime'] = time()
         timeRemaining = QUIZ_TIME
         correctlyAnswered = session['correctlyAnswered'] = 0
@@ -65,9 +66,9 @@ def quiz(typee):
             scoring.append('Score: %d points!' % database.cumulative_quiz_score(session['quizId']))
             #analytics.track('quiz_answer', {'quiz':session['quizId'], 'correct':userAnswerCorrect, 'difficulty':difficulty,'type':typee})
             if userAnswerCorrect:
-               correctlyAnswered += 1
+                correctlyAnswered += 1
             else:
-               incorrectlyAnswered += 1
+                incorrectlyAnswered += 1
         except (ValueError, KeyError):
             flash('Please enter a number as an answer')
 
@@ -75,13 +76,15 @@ def quiz(typee):
         q = question.generateQuestion(type, difficulty)
         session['previousQuestionAnswer'] = q.answer
 
-        response = make_response(render_template('quiz.html',
-            question=str(q),
-            scoring=scoring,
-            timeRemaining=int(timeRemaining),
-            answered = userAnswer is not None, #has the user answered this question
-            correct=userAnswerCorrect,
-            correctAnswer=previousAnswer))
+        response = make_response(
+            render_template('quiz.html',
+                            question=str(q),
+                            scoring=scoring,
+                            timeRemaining=int(timeRemaining),
+                            #has the user answered this question
+                            answered = userAnswer is not None,
+                            correct=userAnswerCorrect,
+                            correctAnswer=previousAnswer))
     else:
         # calculate score
         numberAnswered = correctlyAnswered+incorrectlyAnswered
@@ -92,9 +95,9 @@ def quiz(typee):
         newLeaderboardPosition = database.fetch_user_rank(session['userId'], difficulty)
         leaderboardJump = None
         if oldLeaderboardPosition is not None and newLeaderboardPosition is not None:
-            leaderboardJump =  oldLeaderboardPosition - newLeaderboardPosition
+            leaderboardJump = oldLeaderboardPosition - newLeaderboardPosition
 
-        analytics.track('quiz_completed', {'distinct_id':session['userId'], 'quiz':session['quizId'], 'score':score})
+        analytics.track('quiz_completed', {'quiz': session['quizId'], 'score': score})
         # reset quiz
         session['quizId'] = -1
 
@@ -107,21 +110,22 @@ def quiz(typee):
                     and newDifficultyIndex > question.Difficulties.index(database.fetch_user_difficulty(session['userId'])):
                 if question.Types[typee.upper()] == question.Types.ALL:
                     newDifficulty = question.Difficulties[newDifficultyIndex].lower()
-                    analytics.track('difficulty_increased', {'new_difficulty':newDifficulty})
+                    analytics.track('difficulty_increased', {'new_difficulty': newDifficulty})
                     database.set_user_difficulty(session['userId'], newDifficultyIndex)
                     session['difficulty'] = question.Difficulties[newDifficultyIndex]
                 else:
                     flash('You are good enough at this section to be on another level. Show us your skills at Badass mode to level up')
 
 
-        response = make_response(render_template('quizComplete.html',
-            correct=userAnswerCorrect,
-            numberCorrect=correctlyAnswered,
-            newDifficulty=newDifficulty,
-            oldHighScore=oldHighScore,
-            score=score,
-            leaderboardJump=leaderboardJump,
-            total=correctlyAnswered+incorrectlyAnswered))
+        response = make_response(
+            render_template('quizComplete.html',
+                            correct=userAnswerCorrect,
+                            numberCorrect=correctlyAnswered,
+                            newDifficulty=newDifficulty,
+                            oldHighScore=oldHighScore,
+                            score=score,
+                            leaderboardJump=leaderboardJump,
+                            total=correctlyAnswered+incorrectlyAnswered))
 
 
     # persist changes to session
