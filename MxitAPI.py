@@ -92,8 +92,8 @@ class MxitAPI:
 class User:
     @property
     def age(self):
-
-        today = datetime.date.today
+        today = datetime.date.today()
+        print type(self.dob)
         years = today.year - self.dob.year
         birthday = datetime.date(today.year, self.dob.month, self.dob.day)
         if today < birthday:
@@ -102,20 +102,18 @@ class User:
         return years
 
     @staticmethod
-    @property
     def current():
-        location_info = request.headers['X-Mxit-Location'].split(',')
-        profile_info = request.headers['X-Mxit-Profile'].split(',')
+        location_info = request.headers.get('X-Mxit-Location', 'ZA,,06,,,Johannesburg,33170,2026338302,').split(',')
+        profile_info = request.headers.get('X-Mxit-Profile', 'en,ZA,1995-02-14,Female,1').split(',')
         country = location_info[0]
         city = location_info[5]
         language = profile_info[0]
-        dob = datetime.strptime(profile_info[2], '%Y-%m-%d')
+        dob = datetime.datetime.strptime(profile_info[2], '%Y-%m-%d')
         gender = profile_info[3]
         user_id = request.headers.get('X-Mxit-Userid-R', '1')
         nick = request.headers.get('X-Mxit-Nick', 'Yaseen')
 
         u = User()
-        u.ip = request.headers['X-Forwarded-For']
         u.user_id = user_id
         u.username = nick
         u.country = country

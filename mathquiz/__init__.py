@@ -1,5 +1,6 @@
 from flask import Flask, g
 
+APP_NAME = 'mathchallenge'
 SCHEMA_VERSION = 10
 import config
 

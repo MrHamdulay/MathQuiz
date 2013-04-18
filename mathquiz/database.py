@@ -124,7 +124,7 @@ def create_quiz(type):
     return quiz_id
 
 
-def quiz_complete(difficulty, quiz_id, num_correct, num_questions):
+def quiz_complete(difficulty, quiz_id, quiz_type, num_correct, num_questions):
     if isinstance(difficulty, basestring):
         difficulty = question.Difficulties.index(difficulty)
 
@@ -143,6 +143,8 @@ def quiz_complete(difficulty, quiz_id, num_correct, num_questions):
         # update existing high score
         c.execute('UPDATE users_highscores SET highscore = GREATEST(highscore, %s) WHERE userid = %s AND difficulty = %s',
                  (score, session['userId'], difficulty))
+        c.execute('INSERT INTO scores (user_id, quiz_id, quiz_type, difficulty, score) VALUES (%s, %s, %s, %s, %s)',
+                  (session['userId'], quiz_id, quiz_type, difficulty, score))
     c.close()
 
     g.database.commit()

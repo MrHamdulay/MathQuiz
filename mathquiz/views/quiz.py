@@ -91,7 +91,7 @@ def quiz(typee):
 
         oldHighScore = database.fetch_user_score(session['userId'], difficulty)
         oldLeaderboardPosition = database.fetch_user_rank(session['userId'], difficulty)
-        score = database.quiz_complete(difficulty, session['quizId'], correctlyAnswered, numberAnswered)
+        score = database.quiz_complete(difficulty, session['quizId'], typee.lower(), correctlyAnswered, numberAnswered)
         newLeaderboardPosition = database.fetch_user_rank(session['userId'], difficulty)
         leaderboardJump = None
         if oldLeaderboardPosition is not None and newLeaderboardPosition is not None:
