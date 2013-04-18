@@ -2,6 +2,10 @@ import requests
 from requests.auth import HTTPBasicAuth
 import json
 from time import time
+import datetime
+import time
+
+from flask import request
 
 authUrl = 'https://auth.mxit.com'
 apiUrl = 'http://api.mxit.com'
@@ -85,6 +89,43 @@ class MxitAPI:
         if time() > self.expiration_time:
             raise ForbiddenException('Token expired')
 
+class User:
+    @property
+    def age(self):
+
+        today = datetime.date.today
+        years = today.year - self.dob.year
+        birthday = datetime.date(today.year, self.dob.month, self.dob.day)
+        if today < birthday:
+            years -= 1
+
+        return years
+
+    @staticmethod
+    @property
+    def current():
+        location_info = request.headers['X-Mxit-Location'].split(',')
+        profile_info = request.headers['X-Mxit-Profile'].split(',')
+        country = location_info[0]
+        city = location_info[5]
+        language = profile_info[0]
+        dob = datetime.strptime(profile_info[2], '%Y-%m-%d')
+        gender = profile_info[3]
+        user_id = request.headers.get('X-Mxit-Userid-R', '1')
+        nick = request.headers.get('X-Mxit-Nick', 'Yaseen')
+
+        u = User()
+        u.ip = request.headers['X-Forwarded-For']
+        u.user_id = user_id
+        u.username = nick
+        u.country = country
+        u.city = city
+        u.language = language
+        u.dob = dob
+        u.gender = gender
+
+        return u
+
 if __name__ == '__main__':
     import config
     api = MxitAPI(config.client_id, config.secret_id, 'mathchallenge')
@@ -92,3 +133,4 @@ if __name__ == '__main__':
 
     r = api.send_message('m47692421002', 'ola amigo')
     print r
+    ck
