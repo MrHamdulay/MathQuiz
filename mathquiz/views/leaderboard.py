@@ -1,5 +1,6 @@
 from flask import render_template, session, redirect
 from mathquiz import app, analytics, database, question
+from mathquiz.analytics import stats
 
 @app.route('/leaderboard/<scoring>/<difficulty>', defaults={'page': 0})
 @app.route('/leaderboard/<scoring>/<difficulty>/<int:page>')
@@ -7,6 +8,9 @@ def leaderboard(difficulty, scoring, page):
     if page < 0:
         page = 0
     analytics.track('page', {'page':'leaderboard-%s-%s'%(scoring, difficulty)})
+    stats.incr('mathchallenge.pageview.leaderboard')
+    stats.incr('mathchallenge.pageview.leaderboard-%s-%s' % (scoring, difficulty))
+    stats.incr('mathchallenge.pageview.leaderboard-%s-%s-%s' % (scoring, difficulty, page))
 
     try:
         difficulty = int(difficulty)

@@ -5,6 +5,7 @@ import base64
 import simplejson
 import requests
 from time import sleep
+import statsd
 
 from mathquiz import config
 

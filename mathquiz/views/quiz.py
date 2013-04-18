@@ -3,6 +3,7 @@ from time import time
 
 from flask import render_template, session, request, flash, make_response
 from mathquiz import app, analytics, database, question
+from mathquiz.analytics import stats
 
 QUIZ_TIME = 60
 
@@ -43,6 +44,8 @@ def quiz(typee):
         correctlyAnswered = session['correctlyAnswered'] = 0
         incorrectlyAnswered = session['incorrectlyAnswered'] = 0
         analytics.track('new_quiz', {'quiz_type': question.Types[typee.upper()]})
+        stats.incr('mathchallenge.quiz.new')
+        stats.incr('mathchallenge.quiz.new.%s' % typee.upper())
 
     elif timeRemaining >= 0:
         # if we have already started the quiz
@@ -65,6 +68,7 @@ def quiz(typee):
 
             scoring.append('Score: %d points!' % database.cumulative_quiz_score(session['quizId']))
             #analytics.track('quiz_answer', {'quiz':session['quizId'], 'correct':userAnswerCorrect, 'difficulty':difficulty,'type':typee})
+            stats.incr('mathchallenge.quiz.answer')
             if userAnswerCorrect:
                 correctlyAnswered += 1
             else:
@@ -98,6 +102,8 @@ def quiz(typee):
             leaderboardJump = oldLeaderboardPosition - newLeaderboardPosition
 
         analytics.track('quiz_completed', {'quiz': session['quizId'], 'score': score})
+        stats.incr('mathchallenge.quiz.completed')
+        stats.incr('mathchallenge.quiz.completed.%s' % difficulty)
         # reset quiz
         session['quizId'] = -1
 
@@ -111,6 +117,8 @@ def quiz(typee):
                 if question.Types[typee.upper()] == question.Types.ALL:
                     newDifficulty = question.Difficulties[newDifficultyIndex].lower()
                     analytics.track('difficulty_increased', {'new_difficulty': newDifficulty})
+                    stats.incr('mathchallenge.user.difficulty_increased')
+                    stats.incr('mathchallenge.user.difficulty_increased.%s'%newDifficulty)
                     database.set_user_difficulty(session['userId'], newDifficultyIndex)
                     session['difficulty'] = question.Difficulties[newDifficultyIndex]
                 else:

@@ -1,10 +1,15 @@
 from flask import render_template
 
 from mathquiz import app, analytics, database, question
+from mathquiz.analytics import stats
+
 @app.route('/user/profile/<int:user_id>')
 def profile(user_id):
+    stats.incr('mathchallenge.pageview.profile')
+    stats.incr('mathchallenge.pageview.profile-%d' % user_id)
     analytics.track('page', {'page':'profile-%d'%user_id})
     analytics.track('page', {'page':'profile'})
+
     username=database.fetch_user_name(user_id)
     difficulty=database.fetch_user_difficulty(user_id)
 

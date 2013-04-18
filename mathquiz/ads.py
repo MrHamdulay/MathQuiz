@@ -7,6 +7,7 @@ from flask import request
 
 from MxitAPI import User
 from . import APP_NAME
+from analytics import stats
 
 API_SERVER = 'http://ox-d.shinka.sh/ma/1.0/arj'
 
@@ -39,6 +40,7 @@ def generate_ad(auid):
         return ''
 
     if int(responseData['ads']['count']) == 0:
+        stats.incr("mathchallenge.ads.shinka-zerocount")
         return ''
 
     ad = responseData['ads']['ad'][0]
@@ -48,7 +50,10 @@ def generate_ad(auid):
     r = requests.get(beacon, headers=headers)
     r.raise_for_status()
 
+    stats.incr('mathchallenge.ads.shinka')
+
     if ad['type'] == 'image':
+        stats.incr('mathchallenge.ads.shinka.image')
         mediaUrl = creative['media']
         clickUrl = creative['tracking']['click']
         height, width = creative['height'], creative['width']
@@ -56,6 +61,7 @@ def generate_ad(auid):
         return '<a href="%s"><img src="%s" align="middle"></a>' % (clickUrl, mediaUrl)
 
     if ad['type'] == 'html':
+        stats.incr('mathchallenge.ads.shinka.html')
         return ad['html']
 
 

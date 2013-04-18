@@ -1,5 +1,6 @@
 from pyga import FlaskGATracker
 from flask import request, session, g
+import statsd
 
 import subprocess
 import base64
@@ -46,3 +47,4 @@ else:
         print 'not tracking. mixpanel disabled', args
         pass
 
+stats = statsd.StatsClient(config.statsd_server, config.statsd_port)

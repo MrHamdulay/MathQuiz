@@ -1,6 +1,8 @@
 from flask import request, render_template, session, flash, redirect
 
 from mathquiz import app, analytics, database
+from mathquiz.analytics import stats
+
 @app.route('/feedback', methods=('post', 'get'))
 def feedback():
     if 'feedback' in request.form:
@@ -8,7 +10,10 @@ def feedback():
         database.submit_feedback(session['userId'], feedback)
         flash('Thank you for your feedback.')
         analytics.track('feedback')
+        stats.track('feedback')
+
         return redirect('/')
     else:
         analytics.track('page', {'page':'feedback'})
+        stats.track('mathchallenge.pageview.feedback')
         return render_template('feedback.html')

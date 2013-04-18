@@ -1,10 +1,12 @@
 from flask import session, render_template
 from mathquiz import app, analytics, database
+from mathquiz.analytics import stats
 
 @app.route('/')
 def index():
     session['quizId'] = -1
     analytics.track('page', {'page':'index'})
+    stats.incr('pageview.index')
 
     # if the user has not given us a username we should probably ask for one
     return render_template('index.html',
