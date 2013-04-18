@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <body>
-<mxit:advert auid="393210" />
+{{ ad() | safe }}
         <p><b>Leaderboard -  {{ difficultyName | title }}</b></p>
         <p>
             {% for user in leaderboard %}
@@ -37,6 +37,6 @@
             {% endfor %}
         </p>
             <a href="/">Home</a> | <a href="/feedback">Feedback</a>
-<mxit:advert auid="393210" />
+{{ ad() | safe }}
     </body>
 </html>

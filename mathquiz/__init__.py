@@ -11,3 +11,12 @@ import database
 import views
 
 import analytics
+
+import ads
+
+@app.context_processor
+def inject_ad():
+    def ad():
+        return ads.generate_ad(config.shinka_advert_id)
+
+    return dict(ad=ad)

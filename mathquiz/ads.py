@@ -23,7 +23,8 @@ def generate_ad(auid):
     }
 
     headers = {
-            'X-Forwarded-For': request.headers.get('X-Forwarded-For', '41.132.228.92')
+            'X-Forwarded-For': request.headers.get('X-Forwarded-For', '41.132.228.92'),
+            'Referer': APP_NAME
             }
 
 
@@ -41,10 +42,23 @@ def generate_ad(auid):
         return ''
 
     ad = responseData['ads']['ad'][0]
-    creative = ad['creative']
+
+    creative = ad['creative'][0]
+    beacon = creative['tracking']['impression']
+    r = requests.get(beacon, headers=headers)
+    r.raise_for_status()
 
     if ad['type'] == 'image':
-        return '<a href=""><img src=""></a>'
+        mediaUrl = creative['media']
+        clickUrl = creative['tracking']['click']
+        height, width = creative['height'], creative['width']
+
+        return '<a href="%s"><img src="%s" align="middle"></a>' % (clickUrl, mediaUrl)
+
+    if ad['type'] == 'html':
+        return ad['html']
+
+
 
 if __name__ == '__main__':
     print generate_ad(1)

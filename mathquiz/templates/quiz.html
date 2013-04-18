@@ -1,5 +1,5 @@
 {% extends "template.html" %}
-<mxit:advert auid="393210" />
+{{ ad() | safe }}
 {% block body %}
 {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -26,6 +26,6 @@
     <input type="submit" />
 </form>
 
-<mxit:advert auid="393210" />
+{{ ad() | safe }}
 
 {% endblock %}
