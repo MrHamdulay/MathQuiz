@@ -1,13 +1,14 @@
 import psycopg2
-
+from time import time
 from flask import g, request, session
 
 from mathquiz import app, config, SCHEMA_VERSION, question, analytics
-
+from mathquiz.analytics import stats
 
 @app.before_request
 def initialise():
     g.database = create_database()
+    g._start_time = time()
 
     #make sure we have a user object in the database for this connection
     create_user()
@@ -30,10 +31,14 @@ def create_database():
 
 
 @app.teardown_request
-def close_database(request):
+def destruct(request):
+    stats.timing('mathchallenge.requestTime', int(time() - g._start_time))
+    close_database()
+    return request
+
+def close_database():
     g.database.commit()
     g.database.close()
-    return request
 
 
 def set_user(mxit_user_id):

@@ -2,6 +2,7 @@ import requests
 from datetime import date
 import json
 import logging
+from time import time
 
 from flask import request
 
@@ -11,8 +12,8 @@ from analytics import stats
 
 API_SERVER = 'http://ox-d.shinka.sh/ma/1.0/arj'
 
-
 def generate_ad(auid):
+    return buzz_city_ad()
     user = User.current()
 
     params = {
@@ -24,7 +25,7 @@ def generate_ad(auid):
     }
 
     headers = {
-            'X-Forwarded-For': request.headers.get('X-Forwarded-For', '41.132.228.92'),
+            'X-Forwarded-For': request.headers['X-Forwarded-For']
             'Referer': APP_NAME
             }
 
@@ -48,6 +49,7 @@ def generate_ad(auid):
     creative = ad['creative'][0]
     beacon = creative['tracking']['impression']
     r = requests.get(beacon, headers=headers)
+    print r
     r.raise_for_status()
 
     stats.incr('mathchallenge.ads.shinka')
@@ -63,6 +65,14 @@ def generate_ad(auid):
     if ad['type'] == 'html':
         stats.incr('mathchallenge.ads.shinka.html')
         return ad['html']
+
+def buzz_city_ad():
+    ad = '''
+<a href="http://click.buzzcity.net/click.php?partnerid={partnerid}&ts={time}&browser=app_j2me&bn=1">
+  <img src="http://show.buzzcity.net/show.php?partnerid={partnerid}&get=image&imgsize=120x20&ts={time}&bn=1" alt="" />
+</a>'''.format(partnerid=config.buzzcity_partnerid, time=time.time())
+
+    return ad
 
 
 
