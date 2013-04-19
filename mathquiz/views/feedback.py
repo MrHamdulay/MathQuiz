@@ -10,7 +10,7 @@ def feedback():
         database.submit_feedback(session['userId'], feedback)
         flash('Thank you for your feedback.')
         analytics.track('feedback')
-        stats.track('feedback')
+        stats.incr('mathchallenge.feedback')
 
         return redirect('/')
     else:
