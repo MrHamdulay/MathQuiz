@@ -103,15 +103,22 @@ class User:
 
     @staticmethod
     def current():
-        location_info = request.headers.get('X-Mxit-Location', 'ZA,,06,,,Johannesburg,33170,2026338302,').split(',')
-        profile_info = request.headers.get('X-Mxit-Profile', 'en,ZA,1995-02-14,Female,1').split(',')
+        if 'X-Mxit-Location' not in request.headers:
+            location_info = 'ZA,,06,,,Johannesburg,33170,2026338302,'.split(',')
+            profile_info = 'en,ZA,1995-02-14,Female,1'.split(',')
+            user_id = '1'
+            nick = 'Yaseen'
+        else:
+            location_info = request.headers['X-Mxit-Location'].split(',')
+            profile_info = request.headers['X-Mxit-Profile'].split(',')
+            user_id = request.headers['X-Mxit-Userid-R']
+            nick = request.headers['X-Mxit-Nick']
+
         country = location_info[0]
         city = location_info[5]
         language = profile_info[0]
         dob = datetime.datetime.strptime(profile_info[2], '%Y-%m-%d')
         gender = profile_info[3]
-        user_id = request.headers.get('X-Mxit-Userid-R', '1')
-        nick = request.headers.get('X-Mxit-Nick', 'Yaseen')
 
         u = User()
         u.user_id = user_id
