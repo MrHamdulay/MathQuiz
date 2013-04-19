@@ -71,7 +71,7 @@ def buzz_city_ad():
     adwidth = width
     adheight = width*20/120
     ad = '''
-<a href="http://click.buzzcity.net/click.php?partnerid={partnerid}&ts={time}" style="display: block; width: {width}px; height: {height}px;>
+    <a href="http://click.buzzcity.net/click.php?partnerid={partnerid}&ts={time}" style="display: block; width: {width}px; height: {height}px;">
   <img width="{width}" height="{height}" src="http://show.buzzcity.net/show.php?partnerid={partnerid}&get=image&imgsize=120x20&ts={time}" alt="" />
 </a>'''.format(partnerid=config.buzzcity_partnerid, time=time(), width=adwidth, height=adheight)
     print ad
