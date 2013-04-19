@@ -15,5 +15,5 @@ def feedback():
         return redirect('/')
     else:
         analytics.track('page', {'page':'feedback'})
-        stats.track('mathchallenge.pageview.feedback')
+        stats.incr('mathchallenge.pageview.feedback')
         return render_template('feedback.html')

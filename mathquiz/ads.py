@@ -7,7 +7,7 @@ from time import time
 from flask import request
 
 from MxitAPI import User
-from . import APP_NAME
+from . import APP_NAME, config
 from analytics import stats
 
 API_SERVER = 'http://ox-d.shinka.sh/ma/1.0/arj'
@@ -25,7 +25,7 @@ def generate_ad(auid):
     }
 
     headers = {
-            'X-Forwarded-For': request.headers['X-Forwarded-For']
+            'X-Forwarded-For': request.headers['X-Forwarded-For'],
             'Referer': APP_NAME
             }
 
@@ -67,10 +67,14 @@ def generate_ad(auid):
         return ad['html']
 
 def buzz_city_ad():
+    width, height = map(int, request.headers.get('Ua-Pixels', '240x320').split('x'))
+    adwidth = width
+    adheight = width*20/120
     ad = '''
-<a href="http://click.buzzcity.net/click.php?partnerid={partnerid}&ts={time}&browser=app_j2me&bn=1">
-  <img src="http://show.buzzcity.net/show.php?partnerid={partnerid}&get=image&imgsize=120x20&ts={time}&bn=1" alt="" />
-</a>'''.format(partnerid=config.buzzcity_partnerid, time=time.time())
+<a href="http://click.buzzcity.net/click.php?partnerid={partnerid}&ts={time}">
+  <img width="{width}" height="{height}" src="http://show.buzzcity.net/show.php?partnerid={partnerid}&get=image&imgsize=120x20&ts={time}" alt="" />
+</a>'''.format(partnerid=config.buzzcity_partnerid, time=time(), width=adwidth, height=adheight)
+    print ad
 
     return ad
 
