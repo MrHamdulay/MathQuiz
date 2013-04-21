@@ -6,7 +6,7 @@ from mathquiz.analytics import stats
 def index():
     session['quizId'] = -1
     analytics.track('page', {'page':'index'})
-    stats.incr('pageview.index')
+    stats.incr('mathchallenge.pageview.index')
 
     # if the user has not given us a username we should probably ask for one
     return render_template('index.html',
