@@ -103,16 +103,17 @@ class User:
 
     @staticmethod
     def current():
-        if 'X-Mxit-Location' not in request.headers:
-            location_info = 'ZA,,06,,,Johannesburg,33170,2026338302,'.split(',')
-            profile_info = 'en,ZA,1995-02-14,Female,1'.split(',')
-            user_id = '1'
-            nick = 'Yaseen'
-        else:
+        try:
             location_info = request.headers['X-Mxit-Location'].split(',')
             profile_info = request.headers['X-Mxit-Profile'].split(',')
             user_id = request.headers['X-Mxit-Userid-R']
             nick = request.headers['X-Mxit-Nick']
+        except KeyError:
+            location_info = 'ZA,,06,,,Johannesburg,33170,2026338302,'.split(',')
+            profile_info = 'en,ZA,1995-02-14,Female,1'.split(',')
+            user_id = '1'
+            nick = 'Yaseen'
+
 
         country = location_info[0]
         city = location_info[5]
