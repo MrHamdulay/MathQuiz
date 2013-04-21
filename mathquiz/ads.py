@@ -13,6 +13,7 @@ from analytics import stats
 API_SERVER = 'http://ox-d.shinka.sh/ma/1.0/arj'
 
 def generate_ad(auid):
+    return '<mxit:advert auid="%s" />' % auid
     user = User.current()
 
     params = {
@@ -27,6 +28,8 @@ def generate_ad(auid):
             'X-Forwarded-For': request.headers['X-Forwarded-For'],
             'Referer': APP_NAME
             }
+    print params
+    print headers
 
 
     response = requests.get(API_SERVER, params=params, headers=headers)
