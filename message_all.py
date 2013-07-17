@@ -47,7 +47,7 @@ def main():
         print 'connected'
 
         for i, (username, userid) in enumerate(c):
-            if username == 'Yasen':
+            if username == 'Yasen' or i < 7324:
                 continue
             r = api.send_message(userid, message.replace('<user>', username))
             print i

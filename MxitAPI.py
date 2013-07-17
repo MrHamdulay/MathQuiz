@@ -1,7 +1,6 @@
 import requests
 from requests.auth import HTTPBasicAuth
 import json
-from time import time
 import datetime
 import time
 
@@ -43,10 +42,10 @@ class MxitAPI:
         self.token_type = auth_info['token_type']
         self.access_token = auth_info['access_token']
         self.scopes = auth_info['scope'].split(',')
-        self.expiration_time = time()+int(auth_info['expires_in'])-1000
+        self.expiration_time = time.time()+int(auth_info['expires_in'])-1000
 
     def _api_call(self, resource, body=None):
-        if time() > self.expiration_time:
+        if time.time() > self.expiration_time:
             self.auth(self.scopes, self.grant_type)
 
         headers = {
@@ -59,7 +58,11 @@ class MxitAPI:
         return function(apiUrl+resource, data=body, headers=headers)
 
     def send_message(self, to, body, spool=True):
-        self.validate('message/send')
+        try:
+            self.validate('message/send')
+        except ForbiddenException:
+            self.auth(('message/send',))
+            self.validate('message/send')
         if not isinstance(to, basestring):
             to = ','.join(to)
 
@@ -86,7 +89,7 @@ class MxitAPI:
             raise ForbiddenException('Not authed')
         if scope and scope not in self.scopes:
             raise ForbiddenException('Not authed for requested scope')
-        if time() > self.expiration_time:
+        if time.time() > self.expiration_time:
             raise ForbiddenException('Token expired')
 
 class User:

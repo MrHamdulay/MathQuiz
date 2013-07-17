@@ -15,7 +15,7 @@ def initialise():
 
 
 def create_database():
-    database = psycopg2.connect('user=%s password=%s' % (config.database_user, config.database_password))
+    database = psycopg2.connect('host=%s user=%s password=%s' % (config.database_host, config.database_user, config.database_password))
 
     # ensure schema versions are equal
     c = database.cursor()
